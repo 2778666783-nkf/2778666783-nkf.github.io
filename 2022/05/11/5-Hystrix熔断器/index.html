@@ -1,0 +1,784 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="温笙">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="5.Hystrix 基本介绍 简单实用 请求命令 异常处理 请求缓存 请求合并  5.1 基本介绍Hystrix 叫做断路器或者熔断器。 微服务系统中，整个系统出错的概率非常高。因为在这个微服务系统中涉及到的模块太多了每一个模块出错都有可能导致整个服务出错。当所有模块都稳定运行时，整个服务才算稳定运行。 我们希望当整个系统中，某一个模块无法正常工作时，能通过我们提前配置的一些东西，来使的整个系统正">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5.Hystrix熔断器">
+<meta property="og:url" content="http://example.com/2022/05/11/5-Hystrix%E7%86%94%E6%96%AD%E5%99%A8/index.html">
+<meta property="og:site_name" content="WS CODE">
+<meta property="og:description" content="5.Hystrix 基本介绍 简单实用 请求命令 异常处理 请求缓存 请求合并  5.1 基本介绍Hystrix 叫做断路器或者熔断器。 微服务系统中，整个系统出错的概率非常高。因为在这个微服务系统中涉及到的模块太多了每一个模块出错都有可能导致整个服务出错。当所有模块都稳定运行时，整个服务才算稳定运行。 我们希望当整个系统中，某一个模块无法正常工作时，能通过我们提前配置的一些东西，来使的整个系统正">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image-20220511203610926.png">
+<meta property="article:published_time" content="2022-05-11T12:40:28.000Z">
+<meta property="article:modified_time" content="2022-05-11T12:41:07.106Z">
+<meta property="article:author" content="温笙">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/image-20220511203610926.png">
+  
+  
+  
+  <title>5.Hystrix熔断器 - WS CODE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":["home","post","tag","category","about","links","page",404]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"JAVA"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ws code</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="5.Hystrix熔断器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-11 20:40" pubdate>
+          2022年5月11日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          110 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">5.Hystrix熔断器</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="5-Hystrix"><a href="#5-Hystrix" class="headerlink" title="5.Hystrix"></a>5.Hystrix</h2><ol>
+<li>基本介绍</li>
+<li>简单实用</li>
+<li>请求命令</li>
+<li>异常处理</li>
+<li>请求缓存</li>
+<li>请求合并</li>
+</ol>
+<h3 id="5-1-基本介绍"><a href="#5-1-基本介绍" class="headerlink" title="5.1 基本介绍"></a>5.1 基本介绍</h3><p>Hystrix 叫做断路器或者熔断器。</p>
+<p>微服务系统中，整个系统出错的概率非常高。因为在这个微服务系统中涉及到的模块太多了<br>每一个模块出错都有可能导致整个服务出错。当所有模块都稳定运行时，整个服务才算稳定运行。</p>
+<p>我们希望当整个系统中，某一个模块无法正常工作时，能通过我们提前配置的一些东西，来使的整个系统正常运行，即单个模块出现问题，不影响整个系统。</p>
+<h3 id="5-2-基本用法"><a href="#5-2-基本用法" class="headerlink" title="5.2 基本用法"></a>5.2 基本用法</h3><p>首先，创建新的springboot模块，然后添加依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-netflix-hystrix<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>项目创建成功，进行如下配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">spring.application.name</span>=<span class="hljs-string">hystrix</span><br><span class="hljs-attr">server.port</span>=<span class="hljs-string">3000</span><br><span class="hljs-attr">eureka.client.service-url.defauleZone</span>=<span class="hljs-string">http://localhost:1111/eureka</span><br></code></pre></td></tr></table></figure>
+
+<p>然后，在项目启动类添加如下注解，开启断路器,提供 restTemplate：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@EnableCircuitBreaker</span><br><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Hystrix3000Application</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SpringApplication.run(Hystrix3000Application.class, args);<br>    &#125;<br><br>    <span class="hljs-meta">@LoadBalanced</span><br>    <span class="hljs-meta">@Bean</span><br>    RestTemplate <span class="hljs-title function_">restTemplate</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RestTemplate</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>启动类上注解可以使用 @SpringCloudApplication 代替</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SpringCloudApplication</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Hystrix3000Application</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SpringApplication.run(Hystrix3000Application.class, args);<br>    &#125;<br><br>    <span class="hljs-meta">@LoadBalanced</span><br>    <span class="hljs-meta">@Bean</span><br>    RestTemplate <span class="hljs-title function_">restTemplate</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RestTemplate</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样，Hystrix 就配置完成了</p>
+<p>接下来，提供接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloService</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    RestTemplate restTemplate;<br><br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 在这个方法中，我们将发送一个远程调用，去调用 provider 中提供的 hello 接口</span><br><span class="hljs-comment">     * 但是这个调用可能会失败，</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * 在方法上面添加<span class="hljs-doctag">@HystrixCollapserCommand</span> 注解</span><br><span class="hljs-comment">     * 配置 fallbackMethod 属性，表示方法调用失败时的回调方法</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@HystrixCommand(fallbackMethod = &quot;error&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/hello&quot;</span>,String.class);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 注意：这个方法名称需要和 上面的回调方法名称一致</span><br><span class="hljs-comment">     * 方法返回值也要和对应的方法一致</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">error</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error&quot;</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    HelloService helloService;<br><br><br>    String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> helloService.hello();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>启动成功后，在浏览器请求地址，当请求失败，会进行错误回调</p>
+<h3 id="5-3-请求命令"><a href="#5-3-请求命令" class="headerlink" title="5.3 请求命令"></a>5.3 请求命令</h3><p>请求命令就是以继承的方式来代替前面的注解方式</p>
+<p>我们来自定义一个 <code>HelloCommand</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 自定义 HelloCommand 代替 HystrixCommand 注解</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloCommand</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">HystrixCommand</span>&lt;String&gt; &#123;<br><br>    RestTemplate restTemplate;<br><br>    <span class="hljs-keyword">protected</span> <span class="hljs-title function_">HelloCommand</span><span class="hljs-params">(Setter setter,RestTemplate restTemplate)</span> &#123;<br>        <span class="hljs-built_in">super</span>(setter);<br>        <span class="hljs-built_in">this</span>.restTemplate = restTemplate;<br>    &#125;<br><br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> String <span class="hljs-title function_">run</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/hello&quot;</span>,String.class);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    HelloService helloService;<br><br>    <span class="hljs-meta">@Autowired</span><br>    RestTemplate restTemplate;<br><br><br>    <span class="hljs-meta">@GetMapping(&quot;/hello&quot;)</span><br>    String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> helloService.hello();<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/hello2&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">hello2</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-type">HelloCommand</span> <span class="hljs-variable">helloCommand</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HelloCommand</span>(HystrixCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(<span class="hljs-string">&quot;hello-command&quot;</span>)), restTemplate);<br>        <span class="hljs-comment">//两种方式：2选一 只会执行一次</span><br>        <span class="hljs-comment">//1.直接执行</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">execute</span> <span class="hljs-operator">=</span> helloCommand.execute();<br>        System.out.println(execute);<br>        <span class="hljs-comment">//2.先放入队列，然后再执行</span><br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> helloCommand.queue().get();<br>            System.out.println(s);<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>            e.printStackTrace();<br>        &#125; <span class="hljs-keyword">catch</span> (ExecutionException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ol>
+<li>只能执行一次</li>
+<li>可以直接执行，也可以先入队，后执行</li>
+</ol>
+<p><strong>通过注解实现异步调用</strong><br>首先定义如下方法，返回 Future<String>:</String></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@HystrixCommand(fallbackMethod = &quot;error&quot;)</span><br><span class="hljs-keyword">public</span> Future&lt;String&gt; <span class="hljs-title function_">hello2</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AsyncResult</span>&lt;String&gt;() &#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">invoke</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/hello&quot;</span>,String.class);<br>        &#125;<br>    &#125;;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后调用该方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/hello2&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">hello3</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">HelloCommand</span> <span class="hljs-variable">helloCommand</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HelloCommand</span>(HystrixCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(<span class="hljs-string">&quot;hello-command&quot;</span>)), restTemplate);<br>    <span class="hljs-comment">//两种方式：2选一 只会执行一次</span><br>    <span class="hljs-comment">//1.直接执行</span><br>    <span class="hljs-type">String</span> <span class="hljs-variable">execute</span> <span class="hljs-operator">=</span> helloCommand.execute();<br>    System.out.println(execute);<br>    <span class="hljs-comment">//2.先放入队列，然后再执行</span><br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> helloCommand.queue().get();<br>        System.out.println(s);<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        e.printStackTrace();<br>    &#125; <span class="hljs-keyword">catch</span> (ExecutionException e) &#123;<br>        e.printStackTrace();<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过继承的方式使用 Hystrix 如何实现服务容错&#x2F;降级:重写继承类 getFallback 方法即可:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * run 请求失败的回调</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">protected</span> String <span class="hljs-title function_">getFallback</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error-extends&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-4-异常处理"><a href="#5-4-异常处理" class="headerlink" title="5.4 异常处理"></a>5.4 异常处理</h3><p>就是当发起服务调用的时候，如果不是 Provider 的原因，请求调用失败，而是 Consumer 中<br>本身代码有问题而导致请求失败，consumer 抛出异常，会自动降价，只不过这个时候，我们还需要知道到底是哪里出现了异常</p>
+<p>如下实例代码，如果 hello 方法中执行时抛出异常，一样也会进行服务降级，进入到 error 方法中，在方法中我们可以获取到异常的详细信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> String <span class="hljs-title function_">error</span><span class="hljs-params">(Throwable throwable)</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这是注解方法，也可以通过继承的方式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * run 请求失败的回调</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">protected</span> String <span class="hljs-title function_">getFallback</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error-extends:&quot;</span>+getExecutionException().getMessage();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>如果是通过继承的方式来做 Hystrix ，在 getFallback 方法中，我们可以执行此方法来获取错误信息</p>
+<p>另一种可能性(了解)：如果抛出异常，我们希望直接抛出，不要服务降级。那么只需要配置忽略某个异常即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@HystrixCommand(fallbackMethod = &quot;error&quot;,ignoreExceptions = &#123;ArithmeticException.class&#125;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>/<span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/hello&quot;</span>,String.class);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个配置表示当方法抛出 这个异常的时候，不要进行服务降级，直接将错误抛出</p>
+<h3 id="5-5-请求缓存"><a href="#5-5-请求缓存" class="headerlink" title="5.5 请求缓存"></a>5.5 请求缓存</h3><p>请求缓存就是在 consumer 中调用同一个接口，如果参数相同 则可以使用之前缓存下来的数据</p>
+<p>首先修改 provider 中的接口，检测缓存配置是否生效<br>然后再 hystrix 的请求方法中添加如下注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 表示该方法的请求结果会被缓存起来，默认情况下缓存的key就是方法的参数缓存的 value 就是方法的返回值</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@HystrixCommand(fallbackMethod = &quot;error&quot;,ignoreExceptions = &#123;ArithmeticException.class&#125;)</span><br><span class="hljs-meta">@CacheResult</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>/<span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/hello&quot;</span>,String.class);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>配置完成之后，缓存配置还未生效，一般来说，我们使用缓存，都有一个缓存生命周期这个概念</p>
+<p>我们需要初始化 hystrixRequestContext，初始化完成后，缓存开始生效，<br>HystrixRequestContext close 之后，缓存失效</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/hello&quot;)</span><br>String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">HystrixRequestContext</span> <span class="hljs-variable">context</span> <span class="hljs-operator">=</span> HystrixRequestContext.initializeContext();<br>    <span class="hljs-type">String</span> <span class="hljs-variable">hello</span> <span class="hljs-operator">=</span> helloService.hello();<br>    hello = helloService.hello();<br>    context.close();<br>    <span class="hljs-keyword">return</span> hello;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在 context 关闭之前，缓存是有效的，关闭之后缓存失效，也就是说，访问一次接口，provider之后被调用一次，第二次使用缓存，如果再次调用接口，那么之前缓存的数据是失效的</p>
+<p>默认情况下，缓存的key就是所调用方法的参数，如果参数有多个，就是多个参数组合起来作为缓存的key。但是如果有多个参数，但是只想使用其中一个作为key，那么可以通过 @cacheKey 注解来解决<br>，在方法参数位置添加。</p>
+<p>虽然有两个参数，但是缓存以第一个参数为准。两次请求中，只要 name 一样，即使 age 不一样，第二次请求也可以使用第一次缓存的结果。</p>
+<p>另外还有一个注解：<code>@CacheRemove()</code>。再做数据缓存时，如果还有一个数据删除的方法，我们一般处理删除数据库中的数据，还希望顺带删除缓存中的数据。</p>
+<p>@CacheRemove使用时必须指定 commandKey 属性，也就是缓存方法的名字，指定了 commandKey，@CacheRemove<br>才能删除缓存中的数据</p>
+<p>如下案例：<br>首先，provider 提供接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/cache&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">cache</span><span class="hljs-params">(String name)</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello cloud &quot;</span>+name + <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().toString();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>第二步：缓存请求</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//测试缓存</span><br><span class="hljs-meta">@HystrixCommand(fallbackMethod = &quot;getCacheError&quot;,commandKey = &quot;get-cache&quot;)</span><br><span class="hljs-meta">@CacheResult</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">getCache</span><span class="hljs-params">(String name,Integer age)</span>&#123;<br>    <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/cache?name=&#123;1&#125;&quot;</span>,String.class,name);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>第三步：删除缓存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//删除缓存</span><br><span class="hljs-meta">@HystrixCommand(fallbackMethod = &quot;getCacheError&quot;)</span><br><span class="hljs-meta">@CacheRemove(commandKey = &quot;get-cache&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">deleteCache</span><span class="hljs-params">(String name,Integer age)</span>&#123;<br>    <span class="hljs-comment">//删除数据</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;delete cache success&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>第四步：测试缓存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/getCache-no-delete&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">getCacheNoDelete</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>    <span class="hljs-type">HystrixRequestContext</span> <span class="hljs-variable">hystrixRequestContext</span> <span class="hljs-operator">=</span> HystrixRequestContext.initializeContext();<br>    <span class="hljs-type">String</span> <span class="hljs-variable">cache</span> <span class="hljs-operator">=</span> helloService.getCache(<span class="hljs-string">&quot;沐沐&quot;</span>, <span class="hljs-number">18</span>);<br>    System.out.println(cache);<br><br>    Thread.sleep(<span class="hljs-number">3000</span>);<br><br>    <span class="hljs-type">String</span> <span class="hljs-variable">cache2</span> <span class="hljs-operator">=</span> helloService.getCache(<span class="hljs-string">&quot;沐沐&quot;</span>, <span class="hljs-number">18</span>);<br>    System.out.println(cache2);<br><br>    hystrixRequestContext.close();<br>&#125;<br><br><span class="hljs-meta">@GetMapping(&quot;/getCache&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">getCache</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> InterruptedException &#123;<br>    <span class="hljs-type">HystrixRequestContext</span> <span class="hljs-variable">hystrixRequestContext</span> <span class="hljs-operator">=</span> HystrixRequestContext.initializeContext();<br>    <span class="hljs-type">String</span> <span class="hljs-variable">cache</span> <span class="hljs-operator">=</span> helloService.getCache(<span class="hljs-string">&quot;沐沐&quot;</span>, <span class="hljs-number">18</span>);<br>    System.out.println(cache);<br><br>    helloService.deleteCache(<span class="hljs-string">&quot;沐沐&quot;</span>,<span class="hljs-number">18</span>);<br>    Thread.sleep(<span class="hljs-number">3000</span>);<br><br>    <span class="hljs-type">String</span> <span class="hljs-variable">cache2</span> <span class="hljs-operator">=</span> helloService.getCache(<span class="hljs-string">&quot;沐沐&quot;</span>, <span class="hljs-number">18</span>);<br>    System.out.println(cache2);<br><br>    hystrixRequestContext.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>@CacheRemove</code>在使用的时候，必须指定 commandKey 属性，commandKey<br>其实就是方法的名字，制定了 commandKey，才能成功删除数据</p>
+<p><img src="/image-20220511203610926.png" srcset="/img/loading.gif" lazyload alt="image-20220511203610926"></p>
+<p>继承方式实现 缓存请求和缓存删除<br>只需要重写 getCacheKey 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 返回 cacheKey</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">protected</span> String <span class="hljs-title function_">getCacheKey</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">return</span> name;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>调用时候，一定记得初始化 HystrixRequestContext</p>
+<h3 id="5-6-请求合并"><a href="#5-6-请求合并" class="headerlink" title="5.6 请求合并"></a>5.6 请求合并</h3><p>如果 consumer 中，频繁调用 provider 中同一个接口，在调用时，只是参数不一样，那么这种情况，<br>我们就可以将多个请求合并成一个，可以有效提高请求发送的效率。</p>
+<p>首先，我们在 provider 中提供一个请求合并的接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 假设 consumer 传递过来多个id的格式为: 1,2,3,4</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> ids</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@GetMapping(&quot;/user/&#123;ids&#125;&quot;)</span><br><span class="hljs-keyword">public</span> List&lt;User&gt; <span class="hljs-title function_">getUsersByIds</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> String ids)</span>&#123;<br>    String[] split = ids.split(<span class="hljs-string">&quot;,&quot;</span>);<br>    List&lt;User&gt; users = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>    <span class="hljs-keyword">for</span>(String s:split)&#123;<br>        <span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>();<br>        user.setId(Integer.valueOf(s));<br>        users.add(user);<br>    &#125;<br>    <span class="hljs-keyword">return</span> users;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个接口既可以处理合并之后的请求，也可以处理单个请求</p>
+<p>然后，在 Hystrix 中定义 UserService:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    RestTemplate restTemplate;<br><br>    <span class="hljs-keyword">public</span> List&lt;User&gt; <span class="hljs-title function_">getUsersByIds</span><span class="hljs-params">(List&lt;Integer&gt; ids)</span>&#123;<br>        User[] users = restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/user/&#123;1&#125;&quot;</span>, User[].class, StringUtils.join(ids, <span class="hljs-string">&quot;,&quot;</span>));<br>        <span class="hljs-keyword">return</span> Arrays.asList(users);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来定义 UserBatchCommand，相当于我们之前定义的 HelloCommand“</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserBatchCommand</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">HystrixCommand</span>&lt;List&lt;User&gt;&gt; &#123;<br><br>    <span class="hljs-keyword">private</span> List&lt;Integer&gt; ids;<br>    <span class="hljs-keyword">private</span> UserService userService;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">UserBatchCommand</span><span class="hljs-params">(List&lt;Integer&gt; ids, UserService userService)</span> &#123;<br>        <span class="hljs-built_in">super</span>(HystrixCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(<span class="hljs-string">&quot;batchCommand&quot;</span>)).andCommandKey(HystrixCommandKey.Factory.asKey(<span class="hljs-string">&quot;batchKey&quot;</span>)));<br>        <span class="hljs-built_in">this</span>.ids = ids;<br>        <span class="hljs-built_in">this</span>.userService = userService;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> List&lt;User&gt; <span class="hljs-title function_">run</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">return</span> userService.getUsersByIds(ids);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最后，定义最关键的请求合并方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserCollapseCommand</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">HystrixCollapser</span>&lt;List&lt;User&gt;,User,Integer&gt; &#123;<br><br>    <span class="hljs-keyword">private</span> UserService userService;<br>    <span class="hljs-keyword">private</span> Integer id;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">UserCollapseCommand</span><span class="hljs-params">(UserService userService, Integer id)</span> &#123;<br>        <span class="hljs-built_in">super</span>(HystrixCollapser.Setter.withCollapserKey(<br>                HystrixCollapserKey.Factory.asKey(<span class="hljs-string">&quot;UserCollapseCommand&quot;</span>)<br>                ).andCollapserPropertiesDefaults(<br>                HystrixCollapserProperties.Setter().withTimerDelayInMilliseconds(<span class="hljs-number">200</span>)<br>                )<br>        );<br>        <span class="hljs-built_in">this</span>.userService = userService;<br>        <span class="hljs-built_in">this</span>.id = id;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取请求的参数</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getRequestArgument</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> id;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 请求合并的方法</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> collection</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> HystrixCommand&lt;List&lt;User&gt;&gt; <span class="hljs-title function_">createCommand</span><span class="hljs-params">(Collection&lt;CollapsedRequest&lt;User, Integer&gt;&gt; collection)</span> &#123;<br>        List&lt;Integer&gt; ids = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(collection.size());<br>        collection.forEach(item-&gt;&#123;<br>            ids.add(item.getArgument());<br>        &#125;);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UserBatchCommand</span>(ids,userService);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 请求结果分发</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> users</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> collection</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">mapResponseToRequests</span><span class="hljs-params">(List&lt;User&gt; users, Collection&lt;CollapsedRequest&lt;User, Integer&gt;&gt; collection)</span> &#123;<br><br>        <span class="hljs-type">AtomicInteger</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicInteger</span>();<br>        collection.forEach(item-&gt;&#123;<br>            item.setResponse(users.get(count.getAndIncrement()));<br>        &#125;);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最后结果调用:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserController</span> &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 假设 consumer 传递过来多个id的格式为: 1,2,3,4</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> ids</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@GetMapping(&quot;/user/&#123;ids&#125;&quot;)</span><br>    <span class="hljs-keyword">public</span> List&lt;User&gt; <span class="hljs-title function_">getUsersByIds</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> String ids)</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;ids=&gt;&quot;</span>+ids);<br>        String[] split = ids.split(<span class="hljs-string">&quot;,&quot;</span>);<br>        List&lt;User&gt; users = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-keyword">for</span>(String s:split)&#123;<br>            <span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>();<br>            user.setId(Integer.valueOf(s));<br>            users.add(user);<br>        &#125;<br>        <span class="hljs-keyword">return</span> users;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意：发送 四次请求需要时间非常近 200ms 之内，才能在同一批次之内</p>
+<p><strong>通过注解解决请求合并:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    RestTemplate restTemplate;<br><br>    <span class="hljs-meta">@HystrixCommand</span><br>    <span class="hljs-keyword">public</span> List&lt;User&gt; <span class="hljs-title function_">getUsersByIds</span><span class="hljs-params">(List&lt;Integer&gt; ids)</span>&#123;<br>        User[] users = restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/user/&#123;1&#125;&quot;</span>, User[].class, StringUtils.join(ids, <span class="hljs-string">&quot;,&quot;</span>));<br>        <span class="hljs-keyword">return</span> Arrays.asList(users);<br>    &#125;<br><br>    <span class="hljs-meta">@HystrixCollapser(</span><br><span class="hljs-meta">            batchMethod = &quot;getUsersByIds&quot;,</span><br><span class="hljs-meta">            collapserProperties = &#123;</span><br><span class="hljs-meta">                    @HystrixProperty(name = &quot;timerDelayInMilliseconds&quot;,value = &quot;200&quot;)</span><br><span class="hljs-meta">            &#125;</span><br><span class="hljs-meta">    )</span><br>    <span class="hljs-keyword">public</span> Future&lt;User&gt; <span class="hljs-title function_">getUserById</span><span class="hljs-params">(Integer id)</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的核心是 @HystrixCollapser 注解，在这个注解中，指定批处理方法即可</p>
+<p>测试代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//请求合并</span><br><span class="hljs-meta">@GetMapping(&quot;/hello6&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">hello6</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> ExecutionException, InterruptedException &#123;<br>    <span class="hljs-type">HystrixRequestContext</span> <span class="hljs-variable">context</span> <span class="hljs-operator">=</span> HystrixRequestContext.initializeContext();<br><br>    Future&lt;User&gt; q1 = userService.getUserById(<span class="hljs-number">99</span>);<br>    Future&lt;User&gt; q2 = userService.getUserById(<span class="hljs-number">98</span>);<br>    Future&lt;User&gt; q3 = userService.getUserById(<span class="hljs-number">97</span>);<br>    Future&lt;User&gt; q4 = userService.getUserById(<span class="hljs-number">96</span>);<br><br>    <span class="hljs-type">User</span> <span class="hljs-variable">u1</span> <span class="hljs-operator">=</span> q1.get();<br>    <span class="hljs-type">User</span> <span class="hljs-variable">u2</span> <span class="hljs-operator">=</span> q2.get();<br>    <span class="hljs-type">User</span> <span class="hljs-variable">u3</span> <span class="hljs-operator">=</span> q3.get();<br>    <span class="hljs-type">User</span> <span class="hljs-variable">u4</span> <span class="hljs-operator">=</span> q4.get();<br><br>    System.out.println(u1);<br>    System.out.println(u2);<br>    System.out.println(u3);<br>    System.out.println(u4);<br><br>    context.close();<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/spring-cloud/" class="category-chain-item">spring cloud</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>5.Hystrix熔断器</div>
+      <div>http://example.com/2022/05/11/5-Hystrix熔断器/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>温笙</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月11日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/11/6-OpenFeign%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8/" title="6.OpenFeign远程调用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">6.OpenFeign远程调用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/11/4-Consul%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" title="4.Consul注册中心">
+                        <span class="hidden-mobile">4.Consul注册中心</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,918 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="温笙">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="[TOC] 第三章 Spring Boot 整合 Freemarker3.1 Freemarker 简介这是一个相当老牌的开源的免费的模版引擎。通过 Freemarker 模版，我们可以将数据渲染成 HTML 网页、电子邮件、配置文件以及源代码等。Freemarker 不是面向最终用户的，而是一个 Java 类库，我们可以将之作为一个普通的组件嵌入到我们的产品中。   可以看到，Freemarke">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章SpringBoot视图层配置(2)">
+<meta property="og:url" content="http://example.com/2022/05/20/%E7%AC%AC%E4%B8%89%E7%AB%A0SpringBoot%E8%A7%86%E5%9B%BE%E5%B1%82%E9%85%8D%E7%BD%AE-2/index.html">
+<meta property="og:site_name" content="WS CODE">
+<meta property="og:description" content="[TOC] 第三章 Spring Boot 整合 Freemarker3.1 Freemarker 简介这是一个相当老牌的开源的免费的模版引擎。通过 Freemarker 模版，我们可以将数据渲染成 HTML 网页、电子邮件、配置文件以及源代码等。Freemarker 不是面向最终用户的，而是一个 Java 类库，我们可以将之作为一个普通的组件嵌入到我们的产品中。   可以看到，Freemarke">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/05/20/%E7%AC%AC%E4%B8%89%E7%AB%A0SpringBoot%E8%A7%86%E5%9B%BE%E5%B1%82%E9%85%8D%E7%BD%AE-2/10-1.png">
+<meta property="article:published_time" content="2022-05-20T06:28:18.000Z">
+<meta property="article:modified_time" content="2022-05-20T06:28:44.992Z">
+<meta property="article:author" content="温笙">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/05/20/%E7%AC%AC%E4%B8%89%E7%AB%A0SpringBoot%E8%A7%86%E5%9B%BE%E5%B1%82%E9%85%8D%E7%BD%AE-2/10-1.png">
+  
+  
+  
+  <title>第三章SpringBoot视图层配置(2) - WS CODE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":["home","post","tag","category","about","links","page",404]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"JAVA"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ws code</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第三章SpringBoot视图层配置(2)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-20 14:28" pubdate>
+          2022年5月20日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          119 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第三章SpringBoot视图层配置(2)</h1>
+            
+            <div class="markdown-body">
+              
+              <p>[TOC]</p>
+<h1 id="第三章-Spring-Boot-整合-Freemarker"><a href="#第三章-Spring-Boot-整合-Freemarker" class="headerlink" title="第三章 Spring Boot 整合 Freemarker"></a>第三章 Spring Boot 整合 Freemarker</h1><h2 id="3-1-Freemarker-简介"><a href="#3-1-Freemarker-简介" class="headerlink" title="3.1 Freemarker 简介"></a>3.1 Freemarker 简介</h2><p>这是一个相当老牌的开源的免费的模版引擎。通过 Freemarker 模版，我们可以将数据渲染成 HTML 网页、电子邮件、配置文件以及源代码等。Freemarker 不是面向最终用户的，而是一个 Java 类库，我们可以将之作为一个普通的组件嵌入到我们的产品中。</p>
+<img src="/2022/05/20/%E7%AC%AC%E4%B8%89%E7%AB%A0SpringBoot%E8%A7%86%E5%9B%BE%E5%B1%82%E9%85%8D%E7%BD%AE-2/10-1.png" srcset="/img/loading.gif" lazyload class title="img">
+
+<p>可以看到，Freemarker 可以将模版和数据渲染成 HTML 。</p>
+<p>Freemarker 模版后缀为 <code>.ftl</code>(FreeMarker Template Language)。FTL 是一种简单的、专用的语言，它不是像 Java 那样成熟的编程语言。在模板中，你可以专注于如何展现数据， 而在模板之外可以专注于要展示什么数据。</p>
+<p>好了，这是一个简单的介绍，接下来我们来看看 Freemarker 和 Spring Boot 的一个整合操作。</p>
+<h2 id="3-2-整合-Spring-Boot"><a href="#3-2-整合-Spring-Boot" class="headerlink" title="3.2 整合 Spring Boot"></a>3.2 整合 Spring Boot</h2><p>在 SSM 中整合 Freemarker ，所有的配置文件加起来，前前后后大约在 50 行左右，Spring Boot 中要几行配置呢？ 0 行！</p>
+<h3 id="3-2-1-创建工程"><a href="#3-2-1-创建工程" class="headerlink" title="3.2.1 创建工程"></a>3.2.1 创建工程</h3><p>首先创建一个 Spring Boot 工程，引入 Freemarker 依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-freemarker<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>工程创建完成后，在 <code>org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration</code> 类中，可以看到关于 Freemarker 的自动化配置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@ConditionalOnClass(&#123; freemarker.template.Configuration.class, FreeMarkerConfigurationFactory.class &#125;)</span><br><span class="hljs-meta">@EnableConfigurationProperties(FreeMarkerProperties.class)</span><br><span class="hljs-meta">@Import(&#123; FreeMarkerServletWebConfiguration.class, FreeMarkerReactiveWebConfiguration.class,</span><br><span class="hljs-meta">                FreeMarkerNonWebConfiguration.class &#125;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FreeMarkerAutoConfiguration</span> &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>从这里可以看出，当 <code>classpath</code> 下存在 <code>freemarker.template.Configuration</code> 以及 <code>FreeMarkerConfigurationFactory</code> 时，配置才会生效，也就是说当我们引入了 <code>Freemarker</code> 之后，配置就会生效。但是这里的自动化配置只做了模板位置检查，其他配置则是在导入的 <code>FreeMarkerServletWebConfiguration</code> 配置中完成的。那么我们再来看看 <code>FreeMarkerServletWebConfiguration</code> 类，部分源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)</span><br><span class="hljs-meta">@ConditionalOnClass(&#123; Servlet.class, FreeMarkerConfigurer.class &#125;)</span><br><span class="hljs-meta">@AutoConfigureAfter(WebMvcAutoConfiguration.class)</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FreeMarkerServletWebConfiguration</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractFreeMarkerConfiguration</span> &#123;<br>        <span class="hljs-keyword">protected</span> <span class="hljs-title function_">FreeMarkerServletWebConfiguration</span><span class="hljs-params">(FreeMarkerProperties properties)</span> &#123;<br>                <span class="hljs-built_in">super</span>(properties);<br>        &#125;<br>        <span class="hljs-meta">@Bean</span><br>        <span class="hljs-meta">@ConditionalOnMissingBean(FreeMarkerConfig.class)</span><br>        <span class="hljs-keyword">public</span> FreeMarkerConfigurer <span class="hljs-title function_">freeMarkerConfigurer</span><span class="hljs-params">()</span> &#123;<br>                <span class="hljs-type">FreeMarkerConfigurer</span> <span class="hljs-variable">configurer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FreeMarkerConfigurer</span>();<br>                applyProperties(configurer);<br>                <span class="hljs-keyword">return</span> configurer;<br>        &#125;<br>        <span class="hljs-meta">@Bean</span><br>        <span class="hljs-meta">@ConditionalOnMissingBean(name = &quot;freeMarkerViewResolver&quot;)</span><br>        <span class="hljs-meta">@ConditionalOnProperty(name = &quot;spring.freemarker.enabled&quot;, matchIfMissing = true)</span><br>        <span class="hljs-keyword">public</span> FreeMarkerViewResolver <span class="hljs-title function_">freeMarkerViewResolver</span><span class="hljs-params">()</span> &#123;<br>                <span class="hljs-type">FreeMarkerViewResolver</span> <span class="hljs-variable">resolver</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FreeMarkerViewResolver</span>();<br>                getProperties().applyToMvcViewResolver(resolver);<br>                <span class="hljs-keyword">return</span> resolver;<br>        &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们来简单看下这段源码：</p>
+<ol>
+<li>@ConditionalOnWebApplication 表示当前配置在 web 环境下才会生效。</li>
+<li>ConditionalOnClass 表示当前配置在存在 Servlet 和 FreeMarkerConfigurer 时才会生效。</li>
+<li>@AutoConfigureAfter 表示当前自动化配置在 WebMvcAutoConfiguration 之后完成。</li>
+<li>代码中，主要提供了 FreeMarkerConfigurer 和 FreeMarkerViewResolver。</li>
+<li>FreeMarkerConfigurer 是 Freemarker 的一些基本配置，例如 templateLoaderPath、defaultEncoding 等</li>
+<li>FreeMarkerViewResolver 则是视图解析器的基本配置，包含了viewClass、suffix、allowRequestOverride、allowSessionOverride 等属性。</li>
+</ol>
+<p>另外还有一点，在这个类的构造方法中，注入了 FreeMarkerProperties：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@ConfigurationProperties(prefix = &quot;spring.freemarker&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FreeMarkerProperties</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractTemplateViewResolverProperties</span> &#123;<br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">DEFAULT_TEMPLATE_LOADER_PATH</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;classpath:/templates/&quot;</span>;<br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">DEFAULT_PREFIX</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;&quot;</span>;<br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">DEFAULT_SUFFIX</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;.ftl&quot;</span>;<br>        <span class="hljs-comment">/**</span><br><span class="hljs-comment">         * Well-known FreeMarker keys which are passed to FreeMarker&#x27;s Configuration.</span><br><span class="hljs-comment">         */</span><br>        <span class="hljs-keyword">private</span> Map&lt;String, String&gt; settings = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>FreeMarkerProperties 中则配置了 Freemarker 的基本信息，例如模板位置在 <code>classpath:/templates/</code> ，再例如模板后缀为 <code>.ftl</code>，那么这些配置我们以后都可以在 application.properties 中进行修改。</p>
+<p>如果我们在 SSM 的 XML 文件中自己配置 Freemarker ，也不过就是配置这些东西。现在，这些配置由 FreeMarkerServletWebConfiguration 帮我们完成了。</p>
+<h3 id="3-2-2-创建类"><a href="#3-2-2-创建类" class="headerlink" title="3.2.2 创建类"></a>3.2.2 创建类</h3><p>首先我们来创建一个 User 类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Data</span><br><span class="hljs-meta">@AllArgsConstructor</span><br><span class="hljs-meta">@NoArgsConstructor</span><br><span class="hljs-meta">@ToString</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>    <span class="hljs-keyword">private</span> Integer id;<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-keyword">private</span> String age;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>再来创建 <code>UserController</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Controller</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserController</span> &#123;<br>    <span class="hljs-meta">@GetMapping(&quot;/hello&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">(Model model)</span>&#123;<br>        List&lt;User&gt; userList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>            userList.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>(i,<span class="hljs-string">&quot;m&quot;</span>+i,<span class="hljs-string">&quot;2182908911@qq.com&quot;</span>));<br>        &#125;<br>        model.addAttribute(<span class="hljs-string">&quot;users&quot;</span>,userList);<br>        model.addAttribute(<span class="hljs-string">&quot;user&quot;</span>,<span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&quot;zhangsan&quot;</span>,<span class="hljs-string">&quot;2778666783@qq.com&quot;</span>));<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello&quot;</span>;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>最后在 freemarker 中渲染数据：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">border</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><br>    &lt;#list users as user&gt;<br>        <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;user.id&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;user.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;user.age&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>    &lt;/#list&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-3-其他配置"><a href="#3-2-3-其他配置" class="headerlink" title="3.2.3 其他配置"></a>3.2.3 其他配置</h3><p>如果我们要修改模版文件位置等，可以在 application.properties 中进行配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">spring.freemarker.allow-request-override</span>=<span class="hljs-string">false</span><br><span class="hljs-attr">spring.freemarker.allow-session-override</span>=<span class="hljs-string">false</span><br><span class="hljs-attr">spring.freemarker.cache</span>=<span class="hljs-string">false</span><br><span class="hljs-attr">spring.freemarker.charset</span>=<span class="hljs-string">UTF-8</span><br><span class="hljs-attr">spring.freemarker.check-template-location</span>=<span class="hljs-string">true</span><br><span class="hljs-attr">spring.freemarker.content-type</span>=<span class="hljs-string">text/html</span><br><span class="hljs-attr">spring.freemarker.expose-request-attributes</span>=<span class="hljs-string">false</span><br><span class="hljs-attr">spring.freemarker.expose-session-attributes</span>=<span class="hljs-string">false</span><br><span class="hljs-attr">spring.freemarker.suffix</span>=<span class="hljs-string">.ftl</span><br><span class="hljs-attr">spring.freemarker.template-loader-path</span>=<span class="hljs-string">classpath:/templates/</span><br></code></pre></td></tr></table></figure>
+
+<p>配置文件按照顺序依次解释如下：</p>
+<ol>
+<li>HttpServletRequest的属性是否可以覆盖controller中model的同名项</li>
+<li>HttpSession的属性是否可以覆盖controller中model的同名项</li>
+<li>是否开启缓存</li>
+<li>模板文件编码</li>
+<li>是否检查模板位置</li>
+<li>Content-Type的值</li>
+<li>是否将HttpServletRequest中的属性添加到Model中</li>
+<li>是否将HttpSession中的属性添加到Model中</li>
+<li>模板文件后缀</li>
+<li>模板文件位置</li>
+</ol>
+<h2 id="3-3-Freemarker-使用细节"><a href="#3-3-Freemarker-使用细节" class="headerlink" title="3.3 Freemarker 使用细节"></a>3.3 Freemarker 使用细节</h2><h3 id="3-3-1-插值与表达式"><a href="#3-3-1-插值与表达式" class="headerlink" title="3.3.1 插值与表达式"></a>3.3.1 插值与表达式</h3><h4 id="3-3-1-1直接输出值"><a href="#3-3-1-1直接输出值" class="headerlink" title="3.3.1.1直接输出值"></a>3.3.1.1直接输出值</h4><h5 id="A：字符串"><a href="#A：字符串" class="headerlink" title="A：字符串"></a>A：字符串</h5><p>可以直接输出一个字符串：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;&quot;hello，我是直接输出的字符串&quot;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;&quot;我的文件保存在C:\\盘&quot;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>\ 需要进行转义。</p>
+<p>如果感觉转义太麻烦，可以在目标字符串的引号前增加 r 标记,在 r 标记后的文本内容将会直接输出，像下面这样：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;r&quot;我的文件保存在C:\盘&quot;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="B-数字"><a href="#B-数字" class="headerlink" title="B: 数字"></a>B: 数字</h5><p>在 FreeMarker 中使用数值需要注意以下几点:</p>
+<ol>
+<li>数值不能省略小数点前面的0，所以”.5″是错误的写法。</li>
+<li>数值 8 , +8 , 8.00 都是相同的。</li>
+</ol>
+<p>数字还有一些其他的玩法：</p>
+<ul>
+<li>将数字以钱的形式展示：</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#assign num=99&gt;<br><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;num?string.currency&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><code>&lt;#assign num=99&gt;</code> 表示定义了一个变量 num，值为 99。最终的展示形式是在数字前面出现了一个人民币符号：<strong>￥99.00</strong></p>
+<ul>
+<li>将数字以百分数的形式展示：</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;num?string.percent&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>展示效果如下：<strong>9,900%</strong></p>
+<h5 id="C-布尔"><a href="#C-布尔" class="headerlink" title="C:布尔"></a>C:布尔</h5><p>布尔类型可以直接定义，不需要引号，像下面这样：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#assign flag=true&gt;<br><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;flag?string(&quot;a&quot;,&quot;b&quot;)&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>首先使用 <code>&lt;#assign flag=true&gt;</code> 定义了一个 Boolean 类型的变量，然后在 div 中展示，如果 flag 为 true，则输出 a，否则输出 b。</p>
+<h5 id="D：集合"><a href="#D：集合" class="headerlink" title="D：集合"></a>D：集合</h5><p>集合也可以现场定义现场输出，例如如下方式定义一个 List 集合并显示出来：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#list [&quot;星期一&quot;, &quot;星期二&quot;, &quot;星期三&quot;, &quot;星期四&quot;, &quot;星期五&quot;, &quot;星期六&quot;, &quot;星期天&quot;] as x&gt;<br>    $&#123;x&#125;<span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span><br>&lt;/#list&gt;<br></code></pre></td></tr></table></figure>
+
+<p>x 代表集合中的每一个元素，最终显示效果如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html">星期一<br>星期二<br>...<br></code></pre></td></tr></table></figure>
+
+<p>集合中的元素也可以是一个表达式：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#list [2+2,&quot;ws&quot;] as x&gt;<br>    $&#123;x&#125; <span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span><br>&lt;/#list&gt;<br></code></pre></td></tr></table></figure>
+
+<p>集合中的第一个元素就是 2+2 的结果，即 4。</p>
+<p>也可以用 <code>1..5</code> 表示 1 到 5，<code>5..1</code> 表示 5 到 1，例如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#list 5..1 as x&gt;<br>    $&#123;x&#125; <span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span><br>&lt;/#list&gt;<br>&lt;#list 1..5 as x&gt;$&#123;x&#125; <span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span><br>&lt;/#list&gt;<br></code></pre></td></tr></table></figure>
+
+<p>也可以定义 Map 集合，Map 集合用一个 <code>&#123;&#125;</code> 来描述：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#list &#123;&quot;name&quot;:&quot;javaboy&quot;,&quot;address&quot;:&quot;www.javaboy.org&quot;&#125;?keys as x&gt;<br>$&#123;x&#125;<br>&lt;/#list&gt;<br>&lt;#list &#123;&quot;name&quot;:&quot;javaboy&quot;,&quot;address&quot;:&quot;www.javaboy.org&quot;&#125;?values as x&gt;<br>    $&#123;x&#125;<br>&lt;/#list&gt;<br></code></pre></td></tr></table></figure>
+
+<p>上面两个循环分别表示遍历 Map 中的 key 和 values。</p>
+<h4 id="3-3-1-2-输出变量"><a href="#3-3-1-2-输出变量" class="headerlink" title="3.3.1.2 输出变量"></a>3.3.1.2 输出变量</h4><p>创建一个 UserController，然后添加如下方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/hello&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">(Model model)</span>&#123;<br>    List&lt;User&gt; userList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>        userList.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>(i,<span class="hljs-string">&quot;m&quot;</span>+i,<span class="hljs-string">&quot;2182908911@qq.com&quot;</span>));<br>    &#125;<br>    model.addAttribute(<span class="hljs-string">&quot;users&quot;</span>,userList);<br>    model.addAttribute(<span class="hljs-string">&quot;user&quot;</span>,<span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&quot;zhangsan&quot;</span>,<span class="hljs-string">&quot;2778666783@qq.com&quot;</span>));<br>    Map&lt;String, Object&gt; info = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>    info.put(<span class="hljs-string">&quot;site&quot;</span>, <span class="hljs-string">&quot;http://www.wenx.site&quot;</span>);<br>    info.put(<span class="hljs-string">&quot;wechat&quot;</span>, <span class="hljs-string">&quot;ws&quot;</span>);<br>    info.put(<span class="hljs-string">&quot;github&quot;</span>, <span class="hljs-string">&quot;https://github.com/ws&quot;</span>);<br>    model.addAttribute(<span class="hljs-string">&quot;info&quot;</span>, info);<br>    model.addAttribute(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;温笙&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来我们在模版文件中对这里的普通变量、List 集合以及 Map 分别进行展示。</p>
+<h5 id="A：普通变量"><a href="#A：普通变量" class="headerlink" title="A：普通变量"></a>A：普通变量</h5><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="B：集合"><a href="#B：集合" class="headerlink" title="B：集合"></a>B：集合</h5><p><strong>直接遍历：</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">border</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><br>        &lt;#list users as u&gt;<br>            <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;u.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;u.age&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>        &lt;/#list&gt;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>输出集合中第三个元素：</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    $&#123;users[3].name&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>输出集合中第 4-6 个元素，即子集合：</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">border</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><br>        &lt;#list users[3..5] as u&gt;<br>            <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;u.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;u.age&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>        &lt;/#list&gt;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>遍历时，可以通过 <code>变量_index</code> 获取遍历的下标：</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">border</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><br>        &lt;#list users[3..5] as u&gt;<br>            <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;u.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;u.age&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;u_index&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>        &lt;/#list&gt;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="C-Map"><a href="#C-Map" class="headerlink" title="C:Map"></a>C:Map</h5><p>直接获取 Map 中的值有不同的写法，如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;info.wechat&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;info[&#x27;site&#x27;]&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>获取 Map 中的所有 key，并根据 key 获取 value：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#list info?keys as key&gt;<br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>&#123;key&#125;--&#123;info[key]&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    &lt;/#list&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>获取 Map 中的所有 value：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#list info?values as value&gt;<br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;value&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    &lt;/#list&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-1-3-字符串操作"><a href="#3-3-1-3-字符串操作" class="headerlink" title="3.3.1.3 字符串操作"></a>3.3.1.3 字符串操作</h4><p>字符串的拼接有两种方式：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;&quot;hello$&#123;name&#125;&quot;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;&quot;hello &quot;+ name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>也可以从字符串中截取子串：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;name[0]&#125;$&#123;name[1]&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;name[0..2]&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-1-4-集合操作"><a href="#3-3-1-4-集合操作" class="headerlink" title="3.3.1.4 集合操作"></a>3.3.1.4 集合操作</h4><p>集合或者 Map 都可以相加。</p>
+<p>集合相加：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#list [&quot;星期一&quot;,&quot;星期二&quot;,&quot;星期三&quot;] + [&quot;星期四&quot;,&quot;星期五&quot;,&quot;星期六&quot;,&quot;星期天&quot;] as x&gt;<br>        $&#123;x&#125;<br>    &lt;/#list&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>Map 相加：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#list (info+&#123;&quot;gitee&quot;:&quot;https://gitee.com/lenve&quot;&#125;)?keys as key&gt;<br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;key&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    &lt;/#list&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-1-5-算数运算符"><a href="#3-3-1-5-算数运算符" class="headerlink" title="3.3.1.5 算数运算符"></a>3.3.1.5 算数运算符</h4><p><code>+</code>、<code>—</code>、<code>*</code>、<code>/</code>、<code>%</code> 运算都是支持的。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#assign age=99&gt;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;age*99/99+99-1&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-1-6-比较运算"><a href="#3-3-1-6-比较运算" class="headerlink" title="3.3.1.6 比较运算"></a>3.3.1.6 比较运算</h4><p>比较运算和 Thymeleaf 比较类似:</p>
+<ol>
+<li>&#x3D; 或者 判断两个值是否相等。</li>
+<li>!&#x3D; 判断两个值是否不等。</li>
+<li><code>&gt;</code> 或者 gt 判断左边值是否大于右边值。</li>
+<li><code>&gt;=</code> 或者 gte 判断左边值是否大于等于右边值。</li>
+<li><code>&lt;</code> 或者 lt 判断左边值是否小于右边值。</li>
+<li><code>&lt;=</code> 或者 lte 判断左边值是否小于等于右边值。</li>
+</ol>
+<p>可以看到，带 <code>&lt;</code> 或者 <code>&gt;</code> 的符号，也都有别名，建议使用别名。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#assign age=99&gt;<br>    &lt;#if age=99&gt;age=99&lt;/#if&gt;<br>    &lt;#if age gt 99&gt;age gt 99&lt;/#if&gt;<br>    &lt;#if age gte 99&gt;age gte 99&lt;/#if&gt;<br>    &lt;#if age lt 99&gt;age lt 99&lt;/#if&gt;<br>    &lt;#if age lte 99&gt;age lte 99&lt;/#if&gt;<br>    &lt;#if age!=99&gt;age!=99&lt;/#if&gt;<br>    &lt;#if age==99&gt;age==99&lt;/#if&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-1-7-逻辑运算"><a href="#3-3-1-7-逻辑运算" class="headerlink" title="3.3.1.7 逻辑运算"></a>3.3.1.7 逻辑运算</h4><p>逻辑运算符有三个:</p>
+<ul>
+<li>逻辑与 <code>&amp;&amp;</code></li>
+<li>逻辑或 <code>||</code></li>
+<li>逻辑非 <code>!</code></li>
+</ul>
+<p>逻辑运算符只能作用于布尔值,否则将产生错误。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#assign age=99&gt;<br>    &lt;#if age=99 &amp;&amp; 1==1&gt;age=99 &amp;&amp; 1==1&lt;/#if&gt;<br>    &lt;#if age=99 || 1==0&gt;age=99 || 1==0&lt;/#if&gt;<br>    &lt;#if !(age gt 99)&gt;!(age gt 99)&lt;/#if&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-1-8-空值处理"><a href="#3-3-1-8-空值处理" class="headerlink" title="3.3.1.8 空值处理"></a>3.3.1.8 空值处理</h4><p>为了处理缺失变量,Freemarker 提供了两个运算符:</p>
+<ol>
+<li><code>!</code>：指定缺失变量的默认值</li>
+<li><code>??</code>：判断某个变量是否存在</li>
+</ol>
+<p>如果某个变量不存在，则设置其为 ws，如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;aaa!&quot;ws&quot;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>如果某个变量不存在，则设置其为空字符串，如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;aaa!&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>即，<code>!</code> 后面的东西如果省略了，默认就是空字符串。</p>
+<p>判断某个变量是否存在：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>&lt;#if aaa??&gt;aaa&lt;/#if&gt;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-3-2-内建函数"><a href="#3-3-2-内建函数" class="headerlink" title="3.3.2 内建函数"></a>3.3.2 内建函数</h3><h4 id="A：cap-first"><a href="#A：cap-first" class="headerlink" title="A：cap_first"></a>A：cap_first</h4><p>使字符串第一个字母大写：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;&quot;hello&quot;?cap_first&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="B-lower-case"><a href="#B-lower-case" class="headerlink" title="B: lower_case"></a>B: lower_case</h4><p>将字符串转换成小写：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;&quot;HELLO&quot;?lower_case&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="C-upper-case"><a href="#C-upper-case" class="headerlink" title="C: upper_case"></a>C: upper_case</h4><p>将字符串转换成大写：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;&quot;hello&quot;?upper_case&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="D-trim"><a href="#D-trim" class="headerlink" title="D:trim"></a>D:trim</h4><p>去掉字符串前后空白字符</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    $&#123;&quot; html&quot;?trim&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="E-size"><a href="#E-size" class="headerlink" title="E: size"></a>E: size</h4><p>获取序列中元素的个数：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;users?size&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="F-int"><a href="#F-int" class="headerlink" title="F: int"></a>F: int</h4><p>取得数字的整数部分,结果带符号：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;3.14?int&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="G-日期格式化"><a href="#G-日期格式化" class="headerlink" title="G: 日期格式化"></a>G: 日期格式化</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>$&#123;birthday?string(&quot;yyyy-MM-dd&quot;)&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="3-4-常用指令"><a href="#3-4-常用指令" class="headerlink" title="3.4 常用指令"></a>3.4 常用指令</h2><h3 id="3-4-1-if-x2F-else"><a href="#3-4-1-if-x2F-else" class="headerlink" title="3.4.1 if&#x2F;else"></a>3.4.1 if&#x2F;else</h3><p>分支控制指令，作用类似于 Java 语言中的 if：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#assign age=23&gt;<br>    &lt;#if (age&gt;60)&gt;老年人<br>    &lt;#elseif (age&gt;40)&gt;中年人<br>    &lt;#elseif (age&gt;20)&gt;青年人<br>    &lt;#else&gt; 少年人<br>    &lt;/#if&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>比较符号中用了 <code>()</code>，因此不用转义。</p>
+<h3 id="3-4-2-switch"><a href="#3-4-2-switch" class="headerlink" title="3.4.2 switch"></a>3.4.2 switch</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    &lt;#assign age=99&gt;<br>    &lt;#switch age&gt;<br>        &lt;#case 23&gt;23&lt;#break&gt;<br>        &lt;#case 24&gt;24&lt;#break&gt;<br>        &lt;#default&gt;9999<br>    &lt;/#switch&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><code>&lt;#break&gt;</code> 是提前退出，也可以用在 <code>&lt;#list&gt;</code> 中。</p>
+<h3 id="3-4-3-include"><a href="#3-4-3-include" class="headerlink" title="3.4.3 include"></a>3.4.3 include</h3><p>include 可以包含一个外部页面</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs markup">&lt;#include &quot;./javaboy.ftlh&quot;&gt;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-4-4-macro"><a href="#3-4-4-macro" class="headerlink" title="3.4.4 macro"></a>3.4.4 macro</h3><p>macro 用来定义一个宏</p>
+<p>我们可以自定义一个名为 book 的宏，并引用它：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#macro book&gt;<br>    三国演义<br>&lt;/#macro&gt;<br>&lt;@book/&gt;<br></code></pre></td></tr></table></figure>
+
+<p>最终页面中会输出宏中所定义的内容。</p>
+<p>在定义宏的时候，也可以传入参数，那么引用时，也需要传入参数：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#macro book bs&gt;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">border</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><br>        &lt;#list bs as b&gt;<br>            <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;b&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>        &lt;/#list&gt;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br>&lt;/#macro&gt;<br>&lt;@book [&quot;三国演义&quot;,&quot;水浒传&quot;]/&gt;<br></code></pre></td></tr></table></figure>
+
+<p>bs 就是需要传入的参数。可以通过传入多个参数，多个参数跟在 bs 后面即可，中间用空格隔开。</p>
+<p>还可以使用 <code>&lt;#nested&gt;</code> 引入用户自定义指令的标签体，像下面这样：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#macro book bs&gt;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">border</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><br>        &lt;#list bs as b&gt;<br>            <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;b&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>        &lt;/#list&gt;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br>    &lt;#nested&gt;<br>&lt;/#macro&gt;<br>&lt;@book [&quot;三国演义&quot;,&quot;水浒传&quot;]&gt;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>hello javaboy!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>&lt;/@book&gt;<br></code></pre></td></tr></table></figure>
+
+<p>在宏定义的时候，<code>&lt;#nested&gt;</code> 相当于是一个占位符，在调用的时候，<code>&lt;@book&gt;</code> 标签中的内容会出现在 <code>&lt;#nested&gt;</code> 位置。</p>
+<p>前面的案例中，宏都是定义在当前页面中，宏也可以定义在一个专门的页面中。新建 myjavaboy.ftlh 页面，内容如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#macro book bs&gt;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">table</span> <span class="hljs-attr">border</span>=<span class="hljs-string">&quot;1&quot;</span>&gt;</span><br>        &lt;#list bs as b&gt;<br>            <span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>$&#123;b&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>        &lt;/#list&gt;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br>    &lt;#nested&gt;<br>&lt;/#macro&gt;<br></code></pre></td></tr></table></figure>
+
+<p>此时，需要先通过 <code>&lt;#import&gt;</code> 标签导入宏，然后才能调用，如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#import &quot;./myjavaboy.ftlh&quot; as com&gt;<br>&lt;@com.book bs=[&quot;三国演义&quot;,&quot;水浒传&quot;]&gt;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>hello javaboy!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>&lt;/@com.book&gt;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-4-5-noparse"><a href="#3-4-5-noparse" class="headerlink" title="3.4.5 noparse"></a>3.4.5 noparse</h3><p>如果想在页面展示一些 Freemarker 语法而不被渲染，则可以使用 noparse 标签，如下</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;#noparse&gt;<br>&lt;#import &quot;./myjavaboy.ftlh&quot; as com&gt;<br>&lt;@com.book bs=[&quot;三国演义&quot;,&quot;水浒传&quot;]&gt;<br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>hello javaboy!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>&lt;/@com.book&gt;<br>&lt;/#noparse&gt;<br></code></pre></td></tr></table></figure>
+
+<p>展示的就是标签字符串</p>
+<h2 id="3-5-自动生成代码实践"><a href="#3-5-自动生成代码实践" class="headerlink" title="3.5 自动生成代码实践"></a>3.5 自动生成代码实践</h2><h2 id="3-6-Spring-Boot-整合-JSP"><a href="#3-6-Spring-Boot-整合-JSP" class="headerlink" title="3.6 Spring Boot 整合 JSP"></a>3.6 Spring Boot 整合 JSP</h2><p><strong>1.创建工程</strong></p>
+<p><strong>2.添加 依赖</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.tomcat.embed<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>tomcat-embed-jasper<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>provided<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>javax.servlet<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>jstl<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>3.添加webapp目录 为web目录</strong></p>
+<p><strong>4.webapp目录下新建 jsp 目录 用来存放jsp页面</strong></p>
+<p><strong>5.配置文件配置jsp前缀后缀</strong></p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">spring.mvc.view.prefix</span>=<span class="hljs-string">/jsp/</span><br><span class="hljs-attr">spring.mvc.view.suffix</span>=<span class="hljs-string">.jsp</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>6.配置运行环境工作目录</strong></p>
+<p>%MODULE_WORKING_DIR%</p>
+<p><strong>7.页面请求</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/01&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">index</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;01&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>8.运行项目：<a target="_blank" rel="noopener" href="http://localhost:8080/01">http://localhost:8080/01</a></strong></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/springboot/" class="category-chain-item">springboot</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第三章SpringBoot视图层配置(2)</div>
+      <div>http://example.com/2022/05/20/第三章SpringBoot视图层配置-2/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>温笙</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月20日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/20/SpringBoot%E6%97%A5%E5%BF%97%E6%A1%86%E6%9E%B6/" title="SpringBoot日志框架">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SpringBoot日志框架</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/20/%E7%AC%AC%E4%BA%8C%E7%AB%A0SpringBoot%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/" title="第二章SpringBoot的基本配置">
+                        <span class="hidden-mobile">第二章SpringBoot的基本配置</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

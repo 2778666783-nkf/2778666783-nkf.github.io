@@ -1,0 +1,761 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="温笙">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="2.Eureka注册中心 Eureka 是 Spring Cloud 中的注册中心，类似于 Dubbo 中的 zookeeper ，那么到底什么是注册中心，我们为什么需要注册中心》 我们首先来看一个传统的单体应用：  在单体应用中，所有的业务都集中在一个项目中，当用户从浏览器发起请求时，直接由前端发起请求给后端，后端调用业务逻辑，给前端请求作出响应，完成一次调用。整个调用过程是一条直线，不需要服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2.Eureka">
+<meta property="og:url" content="http://example.com/2022/05/11/2-Eureka/index.html">
+<meta property="og:site_name" content="WS CODE">
+<meta property="og:description" content="2.Eureka注册中心 Eureka 是 Spring Cloud 中的注册中心，类似于 Dubbo 中的 zookeeper ，那么到底什么是注册中心，我们为什么需要注册中心》 我们首先来看一个传统的单体应用：  在单体应用中，所有的业务都集中在一个项目中，当用户从浏览器发起请求时，直接由前端发起请求给后端，后端调用业务逻辑，给前端请求作出响应，完成一次调用。整个调用过程是一条直线，不需要服务">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image-20220511172825438.png">
+<meta property="og:image" content="http://example.com/image-20220511174027989.png">
+<meta property="og:image" content="http://example.com/image-20220511174713240.png">
+<meta property="og:image" content="http://example.com/image-20220511175127289.png">
+<meta property="og:image" content="http://example.com/image-20220511181428802.png">
+<meta property="og:image" content="http://example.com/image-20220511181508000.png">
+<meta property="og:image" content="http://example.com/image-20220511181645087.png">
+<meta property="og:image" content="http://example.com/image-20220511182112887.png">
+<meta property="article:published_time" content="2022-05-11T10:22:21.000Z">
+<meta property="article:modified_time" content="2022-05-11T10:25:29.319Z">
+<meta property="article:author" content="温笙">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/image-20220511172825438.png">
+  
+  
+  
+  <title>2.Eureka - WS CODE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":["home","post","tag","category","about","links","page",404]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"JAVA"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ws code</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="2.Eureka"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-11 18:22" pubdate>
+          2022年5月11日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          44 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">2.Eureka</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="2-Eureka"><a href="#2-Eureka" class="headerlink" title="2.Eureka"></a>2.Eureka</h2><p><strong>注册中心</strong></p>
+<p>Eureka 是 Spring Cloud 中的注册中心，类似于 Dubbo 中的 zookeeper ，那么到底什么是注册中心，我们为什么需要注册中心》</p>
+<p>我们首先来看一个传统的单体应用：</p>
+<p><img src="/image-20220511172825438.png" srcset="/img/loading.gif" lazyload alt="image-20220511172825438"></p>
+<p>在单体应用中，所有的业务都集中在一个项目中，当用户从浏览器发起请求时，直接由前端发起请求给后端，后端调用业务逻辑，给前端请求作出响应，完成一次调用。整个调用过程是一条直线，不需要服务之家你的中转，所以没有必要引入注册中心。</p>
+<p>随着公司的项目越来越大，我们会将系统进行拆分，例如一个电商系统，可以拆分成订单模块、物流模块等等，这样，当用户发起请求，就需要各个模块之间进行协作，这样不可避免的要进行模块之间的调用。此时，我们的系统就会发生变化：</p>
+<p><img src="/image-20220511174027989.png" srcset="/img/loading.gif" lazyload alt="image-20220511174027989"></p>
+<p>在这里，大家可以看到，模块之间的调用，变得越来越复杂，而且模块之间还存在强耦合，例如 A 调用 B，那么就要在 A 中写上 B 地址，也意味着 B 的部署位置要固定，同时，如果以后要进行集群化部署，A 也需要修改。</p>
+<p>为了解决服务之间的耦合，注册中心闪亮登场。</p>
+<h3 id="2-1Eureka-介绍"><a href="#2-1Eureka-介绍" class="headerlink" title="2.1Eureka 介绍"></a>2.1Eureka 介绍</h3><p>Eureka 是 Netfix 公司提供的一款服务注册中心，Eureka 基于 REST 来实现服务的注册与发现，曾经 Eureka 是 Spring Cloud 中最重要的核心组件之一。Spring Cloud 中封装了 Eureka，在 Eureka 的基础上，优化了一些配置，然后提供了可视化的页面，可以方便的查看注册情况以及服务注册中心集群的运行状况。</p>
+<p>Eureka 有两部分：服务端和客户端，五福段就是注册中心，用来接收其他服务的注册，客户端则是一个 Java 客户端，用来注册，并可以实现负载均衡等功能。</p>
+<p><img src="/image-20220511174713240.png" srcset="/img/loading.gif" lazyload alt="image-20220511174713240"></p>
+<p>从图中，我们可以看出，Eureka 中，有三个角色：</p>
+<ul>
+<li>Eureka Server：注册中心</li>
+<li>Eureka Provider：服务提供者</li>
+<li>Eureka Consumer：服务消费者</li>
+</ul>
+<h3 id="2-2Eureka-搭建"><a href="#2-2Eureka-搭建" class="headerlink" title="2.2Eureka 搭建"></a>2.2Eureka 搭建</h3><p>Eureka 本身是 Java 来开发的，Spring Cloud 使用 Spring Boot 技术对Eureka进行了封装，所以，在Spring Cloud中使用 Eureka 非常方便，只需要进入 <code>spring-cloud-starter-netfix-eureka-server</code>这个依赖即可，然后就像启动一个普通的 Spring Boot 项目启动 Eureka 即可。</p>
+<p>创建一个普通的 Spring Boot 项目，创建时，添加 Eureka 依赖：</p>
+<p><img src="/image-20220511175127289.png" srcset="/img/loading.gif" lazyload alt="image-20220511175127289"></p>
+<p>项目创建成功后，在项目启动类上添加注解，标记该项目是一个 Eureka Server:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@EnableEurekaServer</span> 开启 Eureka server 功能</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@EnableEurekaServer</span><br><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">EurekaApplication</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SpringApplication.run(EurekaApplication.class, args);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>@EnableEurekaServer</code>:注解表示开启 Eureka 功能</p>
+<p>接下来，在 Application.properties 中添加基本配置信息：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-comment"># 设置端口</span><br><span class="hljs-attr">server.port</span>=<span class="hljs-string">1111</span><br><span class="hljs-comment"># 给项目起一个名字</span><br><span class="hljs-attr">spring.application.name</span>=<span class="hljs-string">eureka</span><br><span class="hljs-comment"># 默认情况下 Eureka Server 也是一个普通的微服务，所以当他还是一个注册中心的时候，他会有两层身份，</span><br><span class="hljs-comment"># 第一个就是注册中心，第二个就是普通服务，即当前服务会自己把自己注册到自己上面</span><br><span class="hljs-comment"># eureka.client.register-with-eureka=false 表示当前项目不要注册到注册中心</span><br><span class="hljs-attr">eureka.client.register-with-eureka</span>=<span class="hljs-string">false</span><br><span class="hljs-comment"># 表示是否层 Eureka Server 获取注册信息</span><br><span class="hljs-attr">eureka.client.fetch-registry</span>=<span class="hljs-string">false</span><br></code></pre></td></tr></table></figure>
+
+<p>配置完成后，就可以启动项目了。</p>
+<p>如果在项目启动时，遇到<code>java.lang.TypeNotPresentException</code>异常，这是因为JDK9以上，移除了JAXB，这个时候，只需要我们手动引入 JAXB 即可。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml">jaxb-api<br>jaxb-impl<br>jaxb-runtime<br>activation<br></code></pre></td></tr></table></figure>
+
+<p>项目启动成功后，浏览器输入 <a target="_blank" rel="noopener" href="http://localhost:1111/">http://localhost:1111</a> 就可以看到 Eureka 后台管理页面了：</p>
+<p><img src="/image-20220511181428802.png" srcset="/img/loading.gif" lazyload alt="image-20220511181428805"></p>
+<h3 id="2-3Eureka-集群"><a href="#2-3Eureka-集群" class="headerlink" title="2.3Eureka 集群"></a>2.3Eureka 集群</h3><p>使用了注册中心之后，所有的服务都需要通过注册中心来进行信息交换。注册中心的稳定性就非常重要了，一旦服务注册中心掉线，会影响到整个系统的稳定性，所以，在实际开发中，Eureka 一般都是以集群的形式出现的。</p>
+<p>Eureka 集群，实际上就是启动多个 Eureka 实例，多个 Eureka 实例之间，互相注册，互相同步数据。共同组成一个 Eureka 集群。</p>
+<p>搭建 Eureka 集群，首先我们需要一点准备工作，修改电脑的 host 文件（c:windows\system32\drivers\etc\hosts）：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs txt">127.0.0.1 eurekaA eurekaB<br></code></pre></td></tr></table></figure>
+
+<p>在 <strong>2.2</strong> 基础上，我们在 resource 目录下，再添加两个配置文件。分别为 application-a.properties 以及 application-b.properties</p>
+<p><img src="/image-20220511181508000.png" srcset="/img/loading.gif" lazyload alt="image-20220511181508000"></p>
+<p>application-a.properites 内如如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-comment"># 给当前服务取一个名字</span><br><span class="hljs-attr">spring.application.name</span>=<span class="hljs-string">eureka</span><br><span class="hljs-comment"># 设置端口号</span><br><span class="hljs-attr">server.port</span>=<span class="hljs-string">1111</span><br><span class="hljs-attr">eureka.instance.hostname</span>=<span class="hljs-string">eurekaA</span><br><span class="hljs-comment"># 默认情况下，Eureka Server 也是一个普通的微服务，所以当它还是一个注册中心的时候，他会有两层</span><br><span class="hljs-attr">身份：1.注册中心；2.普通服务，即当前服务会自己把自己注册到自己上面来</span><br><span class="hljs-comment"># register-with-eureka 设置为 false，表示当前项目不要注册到注册中心上</span><br><span class="hljs-attr">eureka.client.register-with-eureka</span>=<span class="hljs-string">true</span><br><span class="hljs-comment"># 表示是否从 Eureka Server 上获取注册信息</span><br><span class="hljs-attr">eureka.client.fetch-registry</span>=<span class="hljs-string">true</span><br><span class="hljs-comment"># A 服务要注册到 B 上面</span><br><span class="hljs-attr">eureka.client.service-url.defaultZone</span>=<span class="hljs-string">http://eurekaB:1112/eureka</span><br></code></pre></td></tr></table></figure>
+
+<p>application-b.properites 内如如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-comment"># 给当前服务取一个名字</span><br><span class="hljs-attr">spring.application.name</span>=<span class="hljs-string">eureka</span><br><span class="hljs-comment"># 设置端口号</span><br><span class="hljs-attr">server.port</span>=<span class="hljs-string">1112</span><br><span class="hljs-attr">eureka.instance.hostname</span>=<span class="hljs-string">eurekaB</span><br><span class="hljs-comment"># 默认情况下，Eureka Server 也是一个普通的微服务，所以当它还是一个注册中心的时候，他会有两层</span><br><span class="hljs-attr">身份：1.注册中心；2.普通服务，即当前服务会自己把自己注册到自己上面来</span><br><span class="hljs-comment"># register-with-eureka 设置为 false，表示当前项目不要注册到注册中心上</span><br><span class="hljs-attr">eureka.client.register-with-eureka</span>=<span class="hljs-string">true</span><br><span class="hljs-comment"># 表示是否从 Eureka Server 上获取注册信息</span><br><span class="hljs-attr">eureka.client.fetch-registry</span>=<span class="hljs-string">true</span><br><span class="hljs-attr">eureka.client.service-url.defaultZone</span>=<span class="hljs-string">http://eurekaA:1111/eureka</span><br></code></pre></td></tr></table></figure>
+
+<p>配置完成后，对当前项目打包，打成 jar 包：</p>
+<p><img src="/image-20220511181645087.png" srcset="/img/loading.gif" lazyload alt="image-20220511181645087"></p>
+<p>打包完成后，在命令行启动两个 Eureka 实例。两个启动命令分别如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">java -jar eureka-0.0.1-SNAPSHOT.jar --spring.profiles.active=a<br>java -jar eureka-0.0.1-SNAPSHOT.jar --spring.profiles.active=b<br></code></pre></td></tr></table></figure>
+
+<p>启动成功后，就可以看到，两个服务之间互相注册，共同给组成一个集群。</p>
+<h3 id="2-4-Eureka-工作细节"><a href="#2-4-Eureka-工作细节" class="headerlink" title="2.4 Eureka 工作细节"></a>2.4 Eureka 工作细节</h3><p>Eureka 本身可以分为两大部分，Eureka Server 和 Eureka Client</p>
+<h4 id="2-4-1-Eureka-Server"><a href="#2-4-1-Eureka-Server" class="headerlink" title="2.4.1 Eureka Server"></a>2.4.1 Eureka Server</h4><p>Eureka Server 主要对外提供了三个功能：</p>
+<ol>
+<li>服务注册，所有的服务都注册到 Eureka Server 上面来</li>
+<li>提供注册表，注册表就是所有注册上来服务的一个列表，Eureka Client 在调用服务时，需要获取<br>这个注册表，一般来说，这个注册表会缓存下来，如果缓存失效，则直接获取最新的注册表</li>
+<li>同步状态，Eureka Client 通过注册、心跳等机制，和 Eureka Server 同步当前客户端的状态</li>
+</ol>
+<h4 id="2-4-2-Eureka-Client"><a href="#2-4-2-Eureka-Client" class="headerlink" title="2.4.2 Eureka Client"></a>2.4.2 Eureka Client</h4><p>Eureka Client 主要是用来简化每一个服务和 Eureka Server 之间的交互。Eureka Client 会自动拉取、更新以及缓存 Eureka Server 中的信息，这样，即使 Eureka Server 所有节点都宕机，Eureka Client 依然能够获取到想要调用服务的地址（但是地址可能不准确）。</p>
+<h5 id="2-4-2-1-服务注册"><a href="#2-4-2-1-服务注册" class="headerlink" title="2.4.2.1 服务注册"></a>2.4.2.1 服务注册</h5><p>服务提供者将自己注册到服务注册中心（Eureka Server），需要注意，所谓的服务提供者，只是一个<br>业务上上的划分，本质上他就是一个 Eureka Client。当 Eureka Client 向 Eureka Server 注册时，他需要提供自身的一些元数据信息，例如 IP 地址、端口、名称、运行状态等等。</p>
+<h5 id="2-4-2-2-服务续约"><a href="#2-4-2-2-服务续约" class="headerlink" title="2.4.2.2 服务续约"></a>2.4.2.2 服务续约</h5><p>Eureka Client 注册到 Eureka Server 上之后，事情没有结束，刚刚开始而已。注册成功后，默认情况下，Eureka CLient 每隔 30 秒就要向 Eureka Server 发送一条心跳消息，来告诉 Eureka Server 我还在运行。如果 Eureka Server 连续 90 秒都有没有收到 Eureka Client 的续约消息（连续三次没发送），它会认为 Eureka Client 已经掉线了，会将掉线的 Eureka Client 从当前的服务注册列表中剔除。</p>
+<p>服务续约，有两个相关的属性（一般不建议修改）：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">eureka.instance.lease-renewal-interval-in-seconds</span>=<span class="hljs-string">30</span><br><span class="hljs-attr">eureka.instance.lease-expiration-duration-in-seconds</span>=<span class="hljs-string">90</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>eureka.instance.lease-renewal-interval-in-seconds 表示服务的续约时间，默认是 30 秒<br>eureka.instance.lease-expiration-duration-in-seconds 服务失效时间，默认是 90 秒</p>
+</blockquote>
+<h5 id="2-4-2-3-服务下线"><a href="#2-4-2-3-服务下线" class="headerlink" title="2.4.2.3 服务下线"></a>2.4.2.3 服务下线</h5><p>当 Eureka Client 下线时，它会主动发送一条消息，告诉 Eureka Server ，我下线啦。</p>
+<h5 id="2-4-2-4-获取注册表信息"><a href="#2-4-2-4-获取注册表信息" class="headerlink" title="2.4.2.4 获取注册表信息"></a>2.4.2.4 获取注册表信息</h5><p>Eureka Client 从 Eureka Server 上获取服务的注册信息，并将其缓存在本地。本地客户端，在需要调用远程服务时，会从该信息中查找远程服务所对应的 IP 地址、端口等信息。Eureka Client 上缓存的服务注册信息会定期更新(30 秒)，如果 Eureka Server 返回的注册表信息与本地缓存的注册表信息不同的话，Eureka Client 会自动处理。</p>
+<p>这里，也涉及到两个属性，一个是是否允许获取注册表信息：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">eureka.client.fetch-registry</span>=<span class="hljs-string">true</span><br></code></pre></td></tr></table></figure>
+
+<p>Eureka Client 上缓存的服务注册信息，定期更新的时间间隔，默认 30 秒：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">eureka.client.registry-fetch-interval-seconds</span>=<span class="hljs-string">30</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-5-Eureka-集群原理"><a href="#2-5-Eureka-集群原理" class="headerlink" title="2.5 Eureka 集群原理"></a>2.5 Eureka 集群原理</h3><p>我们来看官方的一张 Eureka 集群架构图：</p>
+<p><img src="/image-20220511182112887.png" srcset="/img/loading.gif" lazyload alt="image-20220511182112887"></p>
+<p>在这个集群架构中，Eureka Server 之间通过 Replicate 进行数据同步，不同的 Eureka Server 之间不区分主从节点，所有节点都是平等的。节点之间，通过置顶 serviceUrl 来互相注册，形成一个集群，进而提高节点的可用性。</p>
+<p>在 Eureka Server 集群中，如果有某一个节点宕机，Eureka Client 会自动切换到新的 Eureka Server上。每一个 Eureka Server 节点，都会互相同步数据。Eureka Server 的连接方式，可以是单线的，就是 A–&gt;b–&gt;C ，此时，A 的数据也会和 C 之间互相同步。但是一般不建议这种写法，在我们配置<code>serviceUrl</code> 时，可以指定多个注册地址，即 A 可以即注册到 B 上，也可以同时注册到 C 上。<br>Eureka 分区：</p>
+<ol>
+<li>region：地理上的不同区域</li>
+<li>zone：具体的机房</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/spring-cloud/" class="category-chain-item">spring cloud</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>2.Eureka</div>
+      <div>http://example.com/2022/05/11/2-Eureka/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>温笙</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月11日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/11/3-RestTemplate/" title="3.RestTemplate">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">3.RestTemplate</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/11/1-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%BB%8B%E7%BB%8D/" title="1.微服务介绍">
+                        <span class="hidden-mobile">1.微服务介绍</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

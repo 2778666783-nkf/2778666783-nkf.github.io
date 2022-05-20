@@ -1,0 +1,782 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="温笙">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1.课程介绍1.1课程内容 介绍微服务的由来，以及微服务和SpringCloud之间的关系 介绍 Spring Cloud 核心组件的使用，可以通过核心组件快速搭建一个微服务架构 介绍 Spring Cloud 中的辅助类组件，例如微服务监控、链路追踪等等 介绍 Spring Cloud Alibaba，以及相关核心组件的具体用法  1.2课程收获 了解微服务的由来以及基本原理 学会 Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="1.微服务介绍">
+<meta property="og:url" content="http://example.com/2022/05/11/1-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="WS CODE">
+<meta property="og:description" content="1.课程介绍1.1课程内容 介绍微服务的由来，以及微服务和SpringCloud之间的关系 介绍 Spring Cloud 核心组件的使用，可以通过核心组件快速搭建一个微服务架构 介绍 Spring Cloud 中的辅助类组件，例如微服务监控、链路追踪等等 介绍 Spring Cloud Alibaba，以及相关核心组件的具体用法  1.2课程收获 了解微服务的由来以及基本原理 学会 Spring">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-11T09:36:11.000Z">
+<meta property="article:modified_time" content="2022-05-11T09:38:44.268Z">
+<meta property="article:author" content="温笙">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>1.微服务介绍 - WS CODE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":["home","post","tag","category","about","links","page",404]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"JAVA"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ws code</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="1.微服务介绍"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-11 17:36" pubdate>
+          2022年5月11日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">1.微服务介绍</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="1-课程介绍"><a href="#1-课程介绍" class="headerlink" title="1.课程介绍"></a>1.课程介绍</h2><h3 id="1-1课程内容"><a href="#1-1课程内容" class="headerlink" title="1.1课程内容"></a>1.1课程内容</h3><ol>
+<li>介绍微服务的由来，以及微服务和SpringCloud之间的关系</li>
+<li>介绍 Spring Cloud 核心组件的使用，可以通过核心组件快速搭建一个微服务架构</li>
+<li>介绍 Spring Cloud 中的辅助类组件，例如微服务监控、链路追踪等等</li>
+<li>介绍 Spring Cloud Alibaba，以及相关核心组件的具体用法</li>
+</ol>
+<h3 id="1-2课程收获"><a href="#1-2课程收获" class="headerlink" title="1.2课程收获"></a>1.2课程收获</h3><ol>
+<li>了解微服务的由来以及基本原理</li>
+<li>学会 Spring Cloud 中各个组件的使用</li>
+<li>了解 Spring Cloud 中黑虚拟组建的运行原理</li>
+<li>掌握通过 Spring Cloud 搭建微服务架构</li>
+<li>掌握辅助组件的用法</li>
+</ol>
+<h2 id="2-微服务介绍"><a href="#2-微服务介绍" class="headerlink" title="2.微服务介绍"></a>2.微服务介绍</h2><p>微服务架构越来越流行，这个没有异议。</p>
+<p>2009 年，Netflix 重新定义了它的应用程序员的开发模型，这个算是微服务的首次探索。</p>
+<p>20014 年，《Microservices》，这篇文章以一个更加通俗易懂的方式，为大家定义了微服务。</p>
+<p>为什么要用微服务？</p>
+<p>互联网应用产品的两大特点：</p>
+<ol>
+<li>需求变化大</li>
+<li>用户群体庞大</li>
+</ol>
+<p>在这样的情况下，我们需要构建一个能够灵活扩展，同时能够快速对应外界环境变化的一个应用，使用传统的开发方式，显然无法满足需求，这个时候，微服务就出现了。</p>
+<h3 id="2-1什么是微服务"><a href="#2-1什么是微服务" class="headerlink" title="2.1什么是微服务"></a>2.1什么是微服务</h3><p>简单的来说，微服务就是一种将一个单一应用程序拆分成一组小型服务的方法，拆分完成之后，每一个服务都运行在独立的进程中，服务与服务之间采用轻量级的通信机制来进行沟通（Spring Cloud 中采用基于HTTP 的 RESTful API）。</p>
+<p>每一个微服务，都是围绕具体的业务进行构建，例如一个电商系统，订单服务、支付服务、物流服务等等，这些拆分后的应用都是独立的应用，都可以独立部署到生产环境中，就是在采用微服务之后，我们的项目不在拘泥于一种语言，可以 Java，Go，Python，PHP等等，混合使用，这在传统的应用开发中，是无法想象的。而使用了微服务之后，我们可以根据业务上下文来选择合适的语言和构建工具进行构建。</p>
+<p>微服务可以理解为是 SOA 的一个传承，一个本质的区别是微服务是一个真正分布式、去中心化的，微<br>服务的拆分比 SOA 更加彻底。</p>
+<h3 id="2-2微服务优势"><a href="#2-2微服务优势" class="headerlink" title="2.2微服务优势"></a>2.2微服务优势</h3><ol>
+<li>复杂度可控</li>
+<li>独立部署</li>
+<li>技术选型灵活</li>
+<li>较好的容错性</li>
+<li>较强的可扩展性</li>
+</ol>
+<h3 id="2-3使用-Spring-Cloud-的优势"><a href="#2-3使用-Spring-Cloud-的优势" class="headerlink" title="2.3使用 Spring Cloud 的优势"></a>2.3使用 Spring Cloud 的优势</h3><p>Spring Cloud 可以理解为微服务这种思想在 Java 领域的一个具体落地，Spring Cloud 在发展之初，就借鉴了微服务的思想，同时结合 Spring Boot，Spring Cloud 提供了一键式启动和部署的能力，极大的的简化了微服务架构的落地。</p>
+<p>Spring Cloud 这种框架，从设计之初，就充分考虑了分布式架构演化所需的功能，例如服务注册、配置中心、消息总线以及负载均衡等。这些功能都是可插拔的形式提供出来的，这样，在分布式系统不选演化的过程中，我们的 Spring Cloud 也可以非常方便的进化。</p>
+<h2 id="3-Spring-Cloud-介绍"><a href="#3-Spring-Cloud-介绍" class="headerlink" title="3.Spring Cloud 介绍"></a>3.Spring Cloud 介绍</h2><h3 id="3-1什么是-Spring-Cloud"><a href="#3-1什么是-Spring-Cloud" class="headerlink" title="3.1什么是 Spring Cloud"></a>3.1什么是 Spring Cloud</h3><p>Spring Cloud 是一系列框架的集合，Spring Cloud 内部包含了许多框架，这些框架互相协作，共同来构建分布式系统。利用这些组件，可以非常方便的构建一个分布式系统。</p>
+<h3 id="3-2核心特性"><a href="#3-2核心特性" class="headerlink" title="3.2核心特性"></a>3.2核心特性</h3><ol>
+<li>服务注册与发现</li>
+<li>负载均衡</li>
+<li>服务之间调用</li>
+<li>容错、服务降级、断路器</li>
+<li>消息总线</li>
+<li>分布式配置中心</li>
+<li>链路器</li>
+</ol>
+<h3 id="3-3版本名称"><a href="#3-3版本名称" class="headerlink" title="3.3版本名称"></a>3.3版本名称</h3><p>不同于其他的框架，Spring Cloud 版本名称是通过 A（Angel）、B（Brixton）、C（Camden）、<br>D（Dalston）、E（Edgware）、F（Finchley）。。 这样来明明的，这些名字使用了伦敦地铁站的名<br>字，目前最新版是 H （Hoxton）版。</p>
+<p>Spring Cloud 中，除了大的版本之外，还有一些小版本，小版本命名方式如下：</p>
+<ul>
+<li>M ，M 版是 milestone 的缩写，所以我们会看到一些版本叫 M1、M2</li>
+<li>RC，RC 是 Release Candidate，表示该项目处于候选状态，这是正式发版之前的一个状态，所以<br>我们会看到 RC1、RC2</li>
+<li>SR，SR 是 Service Release ，表示项目正式发布的稳定版，其实相当于 GA（Generally<br>Available） 版。所以，我们会看到 SR1、SR2</li>
+<li>SNAPSHOT，这个表示快照版</li>
+</ul>
+<h2 id="4-Spring-Cloud-体系"><a href="#4-Spring-Cloud-体系" class="headerlink" title="4.Spring Cloud 体系"></a>4.Spring Cloud 体系</h2><h3 id="4-1-Spring-Cloud-包含的组件"><a href="#4-1-Spring-Cloud-包含的组件" class="headerlink" title="4.1 Spring Cloud 包含的组件"></a>4.1 Spring Cloud 包含的组件</h3><ul>
+<li><p>Spring Cloud Netflix，这个组件，在 Spring Cloud 成立之初，立下了汗马功劳。但是， 2018 年的断更，也是 Netflix 掉链子了。</p>
+</li>
+<li><p>Spring Cloud Config，分布式配置中心，利用 Git&#x2F;Svn 来集中管理项目的配置文件</p>
+</li>
+<li><p>Spring Cloud Bus，消息总线，可以构建消息驱动的微服务，也可以用来做一些状态管理等</p>
+</li>
+<li><p>Spring Cloud Consul，服务注册发现</p>
+</li>
+<li><p>Spring Cloud Stream，基于 Redis、RabbitMQ、Kafka 实现的消息微服务</p>
+</li>
+<li><p>Spring Cloud OpenFeign，提供 OpenFeign 集成到 Spring Boot 应用中的方式，主要解决微服务之间的调用问题</p>
+</li>
+<li><p>Spring Cloud Gateway，Spring Cloud 官方推出的网关服务</p>
+</li>
+<li><p>Spring Cloud Cloudfoundry，利用 Cloudfoundry 集成我们的应用程序</p>
+</li>
+<li><p>Spring Cloud Security，在 Zuul 代理中，为 OAuth2 客户端认证提供支持</p>
+</li>
+<li><p>Spring Cloud AWS ，快速集成亚马逊云服务</p>
+</li>
+<li><p>Spring Cloud Contract，一个消费者驱动的、面向 Java 的契约框架</p>
+</li>
+<li><p>Spring Cloud Zookeeper，基于 Apache Zookeeper 的服务注册和发现</p>
+</li>
+<li><p>Spring Cloud Data Flow，在一个结构化的平台上，组成数据微服务</p>
+</li>
+<li><p>Spring Cloud Kubernetes，Spring Cloud 提供的针对 Kubernetes 的支持</p>
+</li>
+<li><p>Spring Cloud Function</p>
+</li>
+<li><p>Spring Cloud Task，短生命周期的微服务</p>
+</li>
+</ul>
+<h3 id="4-2-Spring-Cloud-和-Spring-Boot-版"><a href="#4-2-Spring-Cloud-和-Spring-Boot-版" class="headerlink" title="4.2 Spring Cloud 和 Spring Boot 版"></a>4.2 Spring Cloud 和 Spring Boot 版</h3><table>
+<thead>
+<tr>
+<th>Spring Boot</th>
+<th><strong>Spring Cloud</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2.2.x</td>
+<td>Hoxton</td>
+</tr>
+<tr>
+<td>2.1.x</td>
+<td>Greenwich</td>
+</tr>
+<tr>
+<td>2.0.x</td>
+<td>Finchley</td>
+</tr>
+<tr>
+<td>1.5.x</td>
+<td>Edgware</td>
+</tr>
+<tr>
+<td>1.5.x</td>
+<td>Dalston</td>
+</tr>
+</tbody></table>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/spring-cloud/" class="category-chain-item">spring cloud</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>1.微服务介绍</div>
+      <div>http://example.com/2022/05/11/1-微服务介绍/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>温笙</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月11日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/11/2-Eureka/" title="2.Eureka">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">2.Eureka</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/11/%E5%9F%BA%E4%BA%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E4%BB%A3%E7%A0%81%E8%AE%B2%E8%A7%A3/" title="基于微服务的代码讲解">
+                        <span class="hidden-mobile">基于微服务的代码讲解</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,790 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="温笙">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="3.1 服务注册服务注册就是把一个微服务注册到 Eureka Server 上，这样，当其他服务需要调用该服务时，只需要从Eureka Server 上查询该服务的信息即可。 这里我们创建一个 provider，作为我们的服务提供者，创建项目时，选择 Eureka Client 依赖，这样，当服务创建成功后，简单配置一下，就可以被注册到 Eureka Server 上了：  项目创建成功后，我们只">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3.RestTemplate">
+<meta property="og:url" content="http://example.com/2022/05/11/3-RestTemplate/index.html">
+<meta property="og:site_name" content="WS CODE">
+<meta property="og:description" content="3.1 服务注册服务注册就是把一个微服务注册到 Eureka Server 上，这样，当其他服务需要调用该服务时，只需要从Eureka Server 上查询该服务的信息即可。 这里我们创建一个 provider，作为我们的服务提供者，创建项目时，选择 Eureka Client 依赖，这样，当服务创建成功后，简单配置一下，就可以被注册到 Eureka Server 上了：  项目创建成功后，我们只">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image-20220511185810025.png">
+<meta property="og:image" content="http://example.com/image-20220511190117551.png">
+<meta property="og:image" content="http://example.com/image-20220511194650274.png">
+<meta property="og:image" content="http://example.com/image-20220511200818877.png">
+<meta property="og:image" content="http://example.com/image-20220511201334587.png">
+<meta property="og:image" content="http://example.com/image-20220511201401646.png">
+<meta property="article:published_time" content="2022-05-11T12:14:56.000Z">
+<meta property="article:modified_time" content="2022-05-11T12:16:01.800Z">
+<meta property="article:author" content="温笙">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/image-20220511185810025.png">
+  
+  
+  
+  <title>3.RestTemplate - WS CODE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":["home","post","tag","category","about","links","page",404]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"JAVA"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ws code</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="3.RestTemplate"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-11 20:14" pubdate>
+          2022年5月11日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          109 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">3.RestTemplate</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="3-1-服务注册"><a href="#3-1-服务注册" class="headerlink" title="3.1 服务注册"></a>3.1 服务注册</h2><p>服务注册就是把一个微服务注册到 Eureka Server 上，这样，当其他服务需要调用该服务时，只需要从<br>Eureka Server 上查询该服务的信息即可。</p>
+<p>这里我们创建一个 provider，作为我们的服务提供者，创建项目时，选择 Eureka Client 依赖，这样，当服务创建成功后，简单配置一下，就可以被注册到 Eureka Server 上了：</p>
+<p><img src="/image-20220511185810025.png" srcset="/img/loading.gif" lazyload alt="image-20220511185810025"></p>
+<p>项目创建成功后，我们只需要在 <code>application.properties</code> 中配置一下项目的注册地址即可。注册地址的配置，和 <code>Eureka Server</code> 集群的配置很像。配置如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">spring.application.name</span>=<span class="hljs-string">provider</span><br><span class="hljs-attr">server.port</span>=<span class="hljs-string">1113</span><br><span class="hljs-attr">eureka.client.service-url.defaultZone</span>=<span class="hljs-string">http://localhost:1111/eureka</span><br></code></pre></td></tr></table></figure>
+
+<p>三行配置，分别表示当前服务的名称、端口号以及服务地址。<br>接下来，启动 Eureka Server，待服务注册中心启动成功后，再启动 provider。<br>两者都启动成功后，浏览器输入 <a href="http://localhost:1111，就可以查看">http://localhost:1111，就可以查看</a> provider 的注册信息：</p>
+<h2 id="3-2服务消费"><a href="#3-2服务消费" class="headerlink" title="3.2服务消费"></a>3.2服务消费</h2><h3 id="3-2-1基本用法"><a href="#3-2-1基本用法" class="headerlink" title="3.2.1基本用法"></a>3.2.1基本用法</h3><p>首先在 <code>provider</code> 中提供一个接口，然后创建一个新的 <code>consumer</code> 项目，消费这个接口。<br>在 <code>provider</code> 中，提供一个 <code>hello</code> 接口，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br>    <span class="hljs-meta">@GetMapping(&quot;/hello&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span> &#123;<br>    	<span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello ws&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来，创建一个 <code>consumer</code> 项目，<code>consumer</code> 项目中，去消费 <code>provider</code> 提供的接口。<code>consumer</code> 要能够获取到 <code>provider</code> 这个接口的地址，他就需要去 <code>Eureka Server</code> 中查询，如果直接在 <code>consumer</code> 中写死 <code>provider</code> 地址，意味着这两个服务之间的耦合度就太高了，我们要降低耦合度。首先我们来看一个写死的调用。</p>
+<p>创建一个 consumer 项目，添加 web 和 eureka client 依赖：</p>
+<p><img src="/image-20220511190117551.png" srcset="/img/loading.gif" lazyload alt="image-20220511190117551"></p>
+<p>创建完成后，我们首先也在 <code>application.properties</code> 中配置一下注册信息：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">spring.application.name</span>=<span class="hljs-string">consumer</span><br><span class="hljs-attr">server.port</span>=<span class="hljs-string">1115</span><br><span class="hljs-attr">eureka.client.service-url.defaultZone</span>=<span class="hljs-string">http://localhost:1111/eureka</span><br></code></pre></td></tr></table></figure>
+
+<p>配置完成后，假设我们现在想在 <code>consumer</code> 中调用 <code>provider</code> 提供的服务，我们可以直接将调用写死，就是说，整个调用过程不会涉及到 <code>Eureka Server</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/hello1&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello1</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">HttpURLConnection</span> <span class="hljs-variable">con</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-type">URL</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(<span class="hljs-string">&quot;http://localhost:1113/hello&quot;</span>);<br>        con = (HttpURLConnection) url.openConnection();<br>        <span class="hljs-keyword">if</span> (con.getResponseCode() == <span class="hljs-number">200</span>) &#123;<br>            <span class="hljs-type">BufferedReader</span> <span class="hljs-variable">br</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span><br>            <span class="hljs-title class_">InputStreamReader</span>(con.getInputStream()));<br>            <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> br.readLine();<br>            br.close();<br>            <span class="hljs-keyword">return</span> s;<br>    	&#125;<br>    &#125; <span class="hljs-keyword">catch</span> (MalformedURLException e) &#123;<br>    	e.printStackTrace();<br>    &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>   	    e.printStackTrace();<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这是一段利用了 <code>HttpUrlConnection</code> 来发起的请求，请求中 <code>provider</code> 的地址写死了，意味着 <code>provider</code>和 <code>consumer</code> 高度绑定在一起，这个不符合微服务的思想。</p>
+<p>要改造它，我们可以借助 Eureka Client 提供的 DiscoveryClient 工具，利用这个工具，我们可以根据服务名从 Eureka Server 上查询到一个服务的详细信息，改造后的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/costumer/hello2&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello2</span><span class="hljs-params">()</span>&#123;<br>    List&lt;ServiceInstance&gt; serviceList = discoveryClient.getInstances(<span class="hljs-string">&quot;provider&quot;</span>);<br>    <span class="hljs-type">ServiceInstance</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> serviceList.get(<span class="hljs-number">0</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">host</span> <span class="hljs-operator">=</span> instance.getHost();<br>    <span class="hljs-type">int</span> <span class="hljs-variable">port</span> <span class="hljs-operator">=</span> instance.getPort();<br><br>    <span class="hljs-type">HttpURLConnection</span> <span class="hljs-variable">connection</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-type">StringBuffer</span> <span class="hljs-variable">sb</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuffer</span>();<br>        sb.append(<span class="hljs-string">&quot;http://&quot;</span>).append(host).append(<span class="hljs-string">&quot;:&quot;</span>).append(port).append(<span class="hljs-string">&quot;/hello&quot;</span>);<br>        <span class="hljs-type">URL</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(sb.toString());<br>        connection = (HttpURLConnection) url.openConnection();<br>        <span class="hljs-keyword">if</span>(connection.getResponseCode()==<span class="hljs-number">200</span>)&#123;<br>            <span class="hljs-type">BufferedReader</span> <span class="hljs-variable">br</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(connection.getInputStream()));<br>            <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> br.readLine();<br>            br.close();<br>            <span class="hljs-keyword">return</span> s;<br>        &#125;<br>    &#125; <span class="hljs-keyword">catch</span> (MalformedURLException e) &#123;<br>        e.printStackTrace();<br>    &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>        e.printStackTrace();<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意，DiscoveryClient 查询到的服务列表是一个集合，因为服务在部署的过程中，可能是集群化部<br>署，集合中的每一项就是一个实例。</p>
+<p>这里我们可以稍微展示一下集群化部署。</p>
+<p>首先，修改 <code>provider</code> 中的 hello 接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloController</span> &#123;<br>    <span class="hljs-meta">@Value(&quot;$&#123;server.port&#125;&quot;)</span><br>    Integer port;<br>    <br>    <span class="hljs-meta">@GetMapping(&quot;/hello&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span> &#123;<br>    	<span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello ws:&quot;</span> + port;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因为我一会儿会启动多个 provider 实例，多个 provider 实例的端口不同，为了区分调用时到底是哪一个provider 提供的服务，这里在接口返回值中返回端口。<br>修改完成后，对 provider 进行打包。provider 打包成功之后，我们在命令行启动两个 provider 实例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">java -jar provider-0.0.1-SNAPSHOT.jar --server.port=1113<br>java -jar provider-0.0.1-SNAPSHOT.jar --server.port=1116<br></code></pre></td></tr></table></figure>
+
+<p>启动完成后，检查 Eureka Server 上，这两个 provider 是否成功注册上来。</p>
+<p>注册成功后，在 consumer 中再去调用 provider，DiscoveryClient 集合中，获取到的就不是一个实例了，而是两个实例。这里我们可以手动实现一个负载均衡：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br><span class="hljs-meta">@GetMapping(&quot;/hello3&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello3</span><span class="hljs-params">()</span> &#123;<br>	List&lt;ServiceInstance&gt; list = discoveryClient.getInstances(<span class="hljs-string">&quot;provider&quot;</span>);<br>	<span class="hljs-type">ServiceInstance</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> list.get((count++) % list.size());<br>	<span class="hljs-type">String</span> <span class="hljs-variable">host</span> <span class="hljs-operator">=</span> instance.getHost();<br>	<span class="hljs-type">int</span> <span class="hljs-variable">port</span> <span class="hljs-operator">=</span> instance.getPort();<br>	<span class="hljs-type">StringBuffer</span> <span class="hljs-variable">sb</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuffer</span>();<br>	sb.append(<span class="hljs-string">&quot;http://&quot;</span>)<br>		.append(host)<br>		.append(<span class="hljs-string">&quot;:&quot;</span>)<br>		.append(port)<br>		.append(<span class="hljs-string">&quot;/hello&quot;</span>);<br>	<span class="hljs-type">HttpURLConnection</span> <span class="hljs-variable">con</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br><br>    <span class="hljs-keyword">try</span> &#123;<br>		<span class="hljs-type">URL</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(sb.toString());<br>		con = (HttpURLConnection) url.openConnection();<br>		<span class="hljs-keyword">if</span> (con.getResponseCode() == <span class="hljs-number">200</span>) &#123;<br>			<span class="hljs-type">BufferedReader</span> <span class="hljs-variable">br</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span><br>			<span class="hljs-title class_">InputStreamReader</span>(con.getInputStream()));<br>			<span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> br.readLine();<br>			br.close();<br>			<span class="hljs-keyword">return</span> s;<br>		&#125;<br>	&#125; <span class="hljs-keyword">catch</span> (MalformedURLException e) &#123;<br>		e.printStackTrace();<br>	&#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>		e.printStackTrace();<br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在从集合中，获取数据时，通过一个小小举动，就可以实现线性负载均衡。</p>
+<h3 id="3-2-2升级改造"><a href="#3-2-2升级改造" class="headerlink" title="3.2.2升级改造"></a>3.2.2升级改造</h3><p>从两个方面进行改造：</p>
+<ol>
+<li>Http 调用</li>
+<li>负载均衡<br>Http 调用，我们使用 Spring 提供的 RestTemplate 来实现。<br>首先，在当前服务中，提供一个 RestTemplate 的实例：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ConsumerApplication</span> &#123;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    	SpringApplication.run(ConsumerApplication.class, args);<br>    &#125;<br>    <br>    <span class="hljs-meta">@Bean</span><br>    RestTemplate <span class="hljs-title function_">restTemplateOne</span><span class="hljs-params">()</span> &#123;<br>    	<span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RestTemplate</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后，在 Http 调用时，不再使用 HttpUrlConnection，而是直接使用 RestTemplate：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Autowired</span><br>RestTemplate restTemplate;<br><span class="hljs-meta">@Autowired</span><br>DiscoveryClient discoveryClient;<br><span class="hljs-meta">@GetMapping(&quot;/hello2&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello2</span><span class="hljs-params">()</span> &#123;<br>    List&lt;ServiceInstance&gt; list = discoveryClient.getInstances(<span class="hljs-string">&quot;provider&quot;</span>);<br>    <span class="hljs-type">ServiceInstance</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> list.get(<span class="hljs-number">0</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">host</span> <span class="hljs-operator">=</span> instance.getHost();<br>    <span class="hljs-type">int</span> <span class="hljs-variable">port</span> <span class="hljs-operator">=</span> instance.getPort();<br>    <span class="hljs-type">StringBuffer</span> <span class="hljs-variable">sb</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuffer</span>();<br>    sb.append(<span class="hljs-string">&quot;http://&quot;</span>)<br>    .append(host)<br>    .append(<span class="hljs-string">&quot;:&quot;</span>)<br>    .append(port)<br>    .append(<span class="hljs-string">&quot;/hello&quot;</span>);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> restTemplate.getForObject(sb.toString(), String.class);<br>    <span class="hljs-keyword">return</span> s;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>用 RestTemplate ，一行代码就实现了 Http 调用。<br>接下来，使用 Ribbon 来快速实现负载均衡。<br>首先，我们需要给 RestTemplate 实例添加一个 @LoadBalanced 注解，开启负载均衡：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Bean</span><br><span class="hljs-meta">@LoadBalanced</span><br>RestTemplate <span class="hljs-title function_">restTemplate</span><span class="hljs-params">()</span> &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RestTemplate</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此时的 RestTemplate 就自动具备了负载均衡的功能。<br>此时的调用代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Autowired</span><br><span class="hljs-meta">@Qualifier(&quot;restTemplate&quot;)</span><br>RestTemplate restTemplate;<br><span class="hljs-meta">@GetMapping(&quot;/hello3&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello3</span><span class="hljs-params">()</span> &#123;<br>	<span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/hello&quot;</span>, String.class);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Java 中关于 Http 请求的工具实际上非常多，自带的 HttpUrlConnection，古老的 HttpClient，后起之秀 OkHttp 等，除了这些之外，还有一个好用的工具–RestTemplate，这是 Spring 中就开始提供的Http 请求工具，不过很多小伙伴们可能是因为 Spring Cloud 才听说它。今天我们就来聊一聊这个RestTemplate。</p>
+<h2 id="3-3RestTemplate"><a href="#3-3RestTemplate" class="headerlink" title="3.3RestTemplate"></a>3.3RestTemplate</h2><p>RestTemplate 是从 Spring3.0 开始支持的一个 Http 请求工具，这个请求工具和 Spring Boot 无关，更和 Spring Cloud 无关。RestTemplate 提供了常见的 REST 请求方法模板，例如 GET、POST、PUT、DELETE 请求以及一些通用的请求执行方法 exchange 和 execute 方法。</p>
+<p>RestTemplate 本身实现了 RestOperations 接口，而在 RestOperations 接口中，定义了常见的RESTful 操作，这些操作在 RestTemplate 中都得到了很好的实现。</p>
+<h3 id="3-3-1-GET"><a href="#3-3-1-GET" class="headerlink" title="3.3.1 GET"></a>3.3.1 GET</h3><p>首先我们在 provider 中定义一个 rest-get 接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/rest-get&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello2</span><span class="hljs-params">(String name)</span> &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello &quot;</span> + name;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来，我们在 consumer 去访问这个接口，这个接口是一个 GET 请求，所以，访问方式，就是调用<br>RestTemplate 中的 GET 请求。可以看到，在 RestTemplate 中，关于 GET 请求，一共有如下两大类方法：</p>
+<p><img src="/image-20220511194650274.png" srcset="/img/loading.gif" lazyload alt="image-20220511194650274"></p>
+<p>这两大类方法实际上是重载的，唯一不同的，就是返回值类型。</p>
+<p>getForObject 返回的是一个对象，这个对象就是服务端返回的具体值。getForEntity 返回的是一个<br>ResponseEntity，这个ResponseEntity 中除了服务端返回的具体数据外，还保留了 Http 响应头的数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/costumer/use-rest-get&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">useRestGet</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">String</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/rest-get?name=&#123;1&#125;&quot;</span>, String.class,<span class="hljs-string">&quot;mm&quot;</span>);<br>    ResponseEntity&lt;String&gt; entity = restTemplate.getForEntity(<span class="hljs-string">&quot;http://provider/rest-get?name=&#123;1&#125;&quot;</span>, String.class,<span class="hljs-string">&quot;mm&quot;</span>);<br><br>    System.out.println(<span class="hljs-string">&quot;object-&gt;&quot;</span>);<br>    System.out.println(obj);<br>    System.out.println(<span class="hljs-string">&quot;entity-&gt;&quot;</span>);<br>    System.out.println(<span class="hljs-string">&quot;body-&gt;&quot;</span>+entity.getBody());<br>    System.out.println(<span class="hljs-string">&quot;statue-&gt;&quot;</span>+entity.getStatusCode());<br>    System.out.println(<span class="hljs-string">&quot;code-&gt;&quot;</span>+entity.getStatusCodeValue());<br><br>    <span class="hljs-comment">//获取请求头</span><br>    System.out.println(<span class="hljs-string">&quot;header-&gt;&quot;</span>);<br>    <span class="hljs-type">HttpHeaders</span> <span class="hljs-variable">headers</span> <span class="hljs-operator">=</span> entity.getHeaders();<br>    Set&lt;String&gt; keySet = headers.keySet();<br>    keySet.forEach(k-&gt;&#123; System.out.println(k+<span class="hljs-string">&quot;-&gt;&quot;</span>+headers.get(k)); &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里大家可以看到，getForObject 直接拿到了服务的返回值，getForEntity 不仅仅拿到服务的返回值，还拿到 http 响应的状态码。然后，启动 Eureka Server、provider 以及 consumer ，访问 consumer 中的 hello4 接口，既可以看到请求结果。</p>
+<p>看清楚两者的区别之后，接下来看下两个各自的重载方法，getForObject 和 getForEntity 分别有三个重载方法，两者的三个重载方法基本都是一致的。所以，这里，我们主要看其中一种。三个重载方法，<br>其实代表了三种不同的传参方式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/costumer/rest-get-three&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">useRestGetTest</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> UnsupportedEncodingException &#123;<br>    restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/rest-get?name=&#123;1&#125;&quot;</span>, String.class,<span class="hljs-string">&quot;mm&quot;</span>);<br><br>    Map&lt;String,Object&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>    map.put(<span class="hljs-string">&quot;name&quot;</span>,<span class="hljs-string">&quot;温笙&quot;</span>);<br>    restTemplate.getForObject(<span class="hljs-string">&quot;http://provider/rest-get?name=&#123;name&#125;&quot;</span>, String.class,map);<br><br>    <span class="hljs-type">String</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;http://provider/rest-get?name=&quot;</span>+ URLEncoder.encode(<span class="hljs-string">&quot;温笙&quot;</span>,<span class="hljs-string">&quot;UTF-8&quot;</span>);<br>    <span class="hljs-type">URI</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> URI.create(url);<br>    restTemplate.getForObject(uri,String.class);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这就是我们说的三种不同的传参方式。</p>
+<h3 id="3-3-2-POST"><a href="#3-3-2-POST" class="headerlink" title="3.3.2 POST"></a>3.3.2 POST</h3><p>首先在 provider 中提供两个 POST 接口，同时，因为 POST 请求可能需要传递 JSON，所以，这里我们创建一个普通的 Maven 项目作为 commons 模块，然后这个 commons 模块被 provider 和<br>consumer 共同引用，这样我们就可以方便的传递 JSON 了。</p>
+<p>commons 模块创建成功后，首先在 commons 模块中添加 User 对象，然后该模块分别被 provider 和 consumer 引用。<br>然后，我们在 provider 中，提供和两个 POST 接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@PostMapping(&quot;/post/user1&quot;)</span><br><span class="hljs-keyword">public</span> User <span class="hljs-title function_">addUser1</span><span class="hljs-params">(User user)</span>&#123;<br>    <span class="hljs-keyword">return</span> user;<br>&#125;<br><br><span class="hljs-comment">/**JSON*/</span><br><span class="hljs-meta">@PostMapping(&quot;/post/user2&quot;)</span><br><span class="hljs-keyword">public</span> User <span class="hljs-title function_">addUser2</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> User user)</span>&#123;<br>    <span class="hljs-keyword">return</span> user;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里定义了两个 User 添加的方法，两个方法代表了两种不同的传参方式。第一种方法是以 key&#x2F;value<br>形式来传参，第二种方法是以 JSON 形式来传参。<br>定义完成后，接下来，我们在 consumer 中调用这两个 POST 接口。</p>
+<p><img src="/image-20220511200818877.png" srcset="/img/loading.gif" lazyload alt="image-20220511200818877"></p>
+<p>可以看到，这里的 post 和前面的 get 非常像，只是多出来了三个方法，就是 postForLocation，另外两个 postForObject 和 postForEntiy 和前面 get 基本一致，所以这里我们主要来看 postForObject，看完之后，我们再来看这个额外的 <code>postForLocation</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**POST*/</span><br><span class="hljs-meta">@GetMapping(&quot;/rest/post&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">restPost</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-comment">// key value</span><br>    MultiValueMap&lt;String,Object&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedMultiValueMap</span>&lt;&gt;();<br>    map.add(<span class="hljs-string">&quot;username&quot;</span>,<span class="hljs-string">&quot;ws&quot;</span>);<br>    map.add(<span class="hljs-string">&quot;password&quot;</span>,<span class="hljs-string">&quot;123&quot;</span>);<br>    map.add(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-number">1</span>);<br>    <span class="hljs-type">User</span> <span class="hljs-variable">user1</span> <span class="hljs-operator">=</span> restTemplate.postForObject(<span class="hljs-string">&quot;http://provider/post/user1&quot;</span>, map, User.class);<br>    System.out.println(user1);<br><br>    <span class="hljs-comment">// json</span><br>    <span class="hljs-type">User</span> <span class="hljs-variable">user2</span> <span class="hljs-operator">=</span> restTemplate.postForObject(<span class="hljs-string">&quot;http://provider/post/user2&quot;</span>, user1, User.class);<br>    System.out.println(user2);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>post 参数到底是 key&#x2F;value 形式还是 json 形式，主要看第二个参数，如果第二个参数是<br>MultiValueMap ，则参数是以 key&#x2F;value 形式来传递的，如果是一个普通对象，则参数是以 json 形式来传递的。</p>
+<p>最后再看看一下 postForLocation 。有的时候，当我执行完一个 post 请求之后，立马要进行重定向，一个非常常见的场景就是注册，注册是一个 post 请求，注册完成之后，立马重定向到登录页面去登<br>录。对于这种场景，我们就可以使用 postForLocation。</p>
+<p>首先我们在 provider 上提供一个用户注册接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Controller</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RegisterController</span> &#123;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/register&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">register</span><span class="hljs-params">(User user)</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;redirect:http://provider/loginPage?username=&quot;</span>+user.getUsername();<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/loginPage&quot;)</span><br>    <span class="hljs-meta">@ResponseBody</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">loginPage</span><span class="hljs-params">(String username)</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;login=&gt;&quot;</span>+username;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意，这里的 post 接口，响应一定是 302，否则 postForLocation 无效。<br><strong>注意，重定向的地址，一定要写成绝对路径，不要写相对路径，否则在 consumer 中调用时会出问题</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/post-location&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">postLocation</span><span class="hljs-params">()</span>&#123;<br>    MultiValueMap&lt;String,Object&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedMultiValueMap</span>&lt;&gt;();<br>    map.add(<span class="hljs-string">&quot;username&quot;</span>,<span class="hljs-string">&quot;ws&quot;</span>);<br>    map.add(<span class="hljs-string">&quot;password&quot;</span>,<span class="hljs-string">&quot;123&quot;</span>);<br>    map.add(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-number">2</span>);<br>    <span class="hljs-type">URI</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> restTemplate.postForLocation(<span class="hljs-string">&quot;http://provider/register&quot;</span>, map);<br>    <span class="hljs-type">String</span> <span class="hljs-variable">object</span> <span class="hljs-operator">=</span> restTemplate.getForObject(uri, String.class);<br>    System.out.println(object);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这就是 postForLocation ，调用该方法返回的是一个 Uri，这个 Uri 就是重定向的地址（里边也包含了重定向的参数），拿到 Uri 之后，就可以直接发送新的请求了。</p>
+<h3 id="3-3-3PUT"><a href="#3-3-3PUT" class="headerlink" title="3.3.3PUT"></a>3.3.3PUT</h3><p>PUT 请求比较简单，重载的方法也比较少。<br>我们首先在 provider 中提供一个 PUT 接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@PutMapping(&quot;/update/user1&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateUser1</span><span class="hljs-params">(User user)</span>&#123;<br>    System.out.println(user);<br>&#125;<br><br><span class="hljs-meta">@PutMapping(&quot;/update/user2&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateUser2</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> User user)</span>&#123;<br>    System.out.println(user);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意，PUT 接口传参其实和 POST 很像，也接受两种类型的参数，key&#x2F;value 形式以及 JSON 形式。<br>在 consumer 中，我们来调用该接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/put&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">putKey</span><span class="hljs-params">()</span>&#123;<br>    MultiValueMap&lt;String,Object&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedMultiValueMap</span>&lt;&gt;();<br>    map.add(<span class="hljs-string">&quot;username&quot;</span>,<span class="hljs-string">&quot;ws&quot;</span>);<br>    map.add(<span class="hljs-string">&quot;password&quot;</span>,<span class="hljs-string">&quot;123&quot;</span>);<br>    map.add(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-number">2</span>);<br>    restTemplate.put(<span class="hljs-string">&quot;http://provider/update/user1&quot;</span>,map);<br><br>    <span class="hljs-type">User</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>();<br>    restTemplate.put(<span class="hljs-string">&quot;http://provider/update/user2&quot;</span>, user);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>consumer 中的写法基本和 post 类似，也是两种方式，可以传递两种不同类型的参数。</p>
+<h3 id="3-3-4-DELETE"><a href="#3-3-4-DELETE" class="headerlink" title="3.3.4 DELETE"></a>3.3.4 DELETE</h3><p>DELETE 也比较容易，我们有两种方式来传递参数，key&#x2F;value 形式或者 PathVariable（参数放在路径中），首先我们在 provider 中定义两个 DELETE 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@DeleteMapping(&quot;/delete/user1&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteUser1</span><span class="hljs-params">(Integer id)</span>&#123;<br>    System.out.println(id);<br>&#125;<br><br><span class="hljs-meta">@DeleteMapping(&quot;/delete/user2/&#123;id&#125;&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteUser2</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> Integer id)</span>&#123;<br>    System.out.println(id);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后在 consumer 中调用这两个删除的接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/del&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">del</span><span class="hljs-params">()</span>&#123;<br>    restTemplate.delete(<span class="hljs-string">&quot;http://provider/delete/user1?id=&#123;1&#125;&quot;</span>,<span class="hljs-number">99</span>);<br>    restTemplate.delete(<span class="hljs-string">&quot;http://provider/delete/user2/&#123;1&#125;&quot;</span>,<span class="hljs-number">100</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>delete 中参数的传递，也支持 map，这块实际上和 get 是一样的。</p>
+<h2 id="3-4-客户端负载均衡"><a href="#3-4-客户端负载均衡" class="headerlink" title="3.4 客户端负载均衡"></a>3.4 客户端负载均衡</h2><p>客户端负载均衡就是相对服务端负载均衡而言的。<br>服务端负载均衡，就是传统的 Nginx 的方式，用 Nginx 做负载均衡，我们称之为服务端负载均衡：</p>
+<p><img src="/image-20220511201334587.png" srcset="/img/loading.gif" lazyload alt="image-20220511201334587"></p>
+<p>这种负载均衡，我们称之为服务端负载均衡，它的一个特点是，就是调用的客户端并不知道具体是哪一<br>个 Server 提供的服务，它也不关心，反正请求发送给 Nginx，Nginx 再将请求转发给 Tomcat，客户端只需要记着 Nginx 的地址即可。</p>
+<p>客户端负载均衡则是另外一种情形：</p>
+<p><img src="/image-20220511201401646.png" srcset="/img/loading.gif" lazyload alt="image-20220511201401646"></p>
+<p>客户端负载均衡，就是调用的客户端本身是知道所有 Server 的详细信息的，当需要调用 Server 上的接口的时候，客户端从自身所维护的 Server 列表中，根据提前配置好的负载均衡策略，自己挑选一个<br>Server 来调用，此时，客户端知道它所调用的是哪一个 Server。</p>
+<p>在 RestTemplate 中，要想使用负载均衡功能，只需要给 RestTemplate 实例上添加一个<br>@LoadBalanced 注解即可，此时，RestTemplate 就会自动具备负载均衡功能，这个负载均衡就是客户端负载均衡。</p>
+<h2 id="3-5-负载均衡原理"><a href="#3-5-负载均衡原理" class="headerlink" title="3.5 负载均衡原理"></a>3.5 负载均衡原理</h2><p>在 Spring Cloud 中，实现负载均衡非常容易，只需要添加 @LoadBalanced 注解即可。只要添加了该注解，一个原本普普通通做 Rest 请求的工具 RestTemplate 就会自动具备负载均衡功能，这个是怎么实现的呢？<br>整体上来说，这个功能的实现就是三个核心点：</p>
+<ol>
+<li>从 Eureka Client 本地缓存的服务注册信息中，选择一个可以调用的服务</li>
+<li>根据 1 中所选择的服务，重构请求 URL 地址</li>
+<li>将 1、2 步的功能嵌入到 RestTemplate 中</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/spring-cloud/" class="category-chain-item">spring cloud</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>3.RestTemplate</div>
+      <div>http://example.com/2022/05/11/3-RestTemplate/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>温笙</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月11日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/11/4-Consul%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" title="4.Consul注册中心">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">4.Consul注册中心</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/11/2-Eureka/" title="2.Eureka">
+                        <span class="hidden-mobile">2.Eureka</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
